@@ -1,11 +1,7 @@
 require('dotenv').config();
 const mysql = require('mysql2');
-const fs = require('fs');
-const path = require('path');
 
-// Create connection
-
-console.log('Database SSL CA Path:', process.env.DATABASE_HOST);
+// Create a connection to the database
 
 const connection = mysql.createConnection({
   host: process.env.DATABASE_HOST,
