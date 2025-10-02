@@ -1,21 +1,23 @@
-import { View, Text, Button, StyleSheet, Pressable, PanResponder } from "react-native";
+import { View, Text, StyleSheet, Pressable, PanResponder, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useRef, useState, useCallback, useEffect } from "react";
+import { Image } from "expo-image";
+// import welcomeScreen1 from "../../assets/welcomeScreen1.png";
 
 export default function Welcome() {
     const router = useRouter();
 
     const slides = [
         {
-            icon: "🧭",
-            description: "Discover your strengths and interests with our personalized quizzes.",
+            image: require("../../assets/images/welcomeScreen1.png"),
+            description: "Discover and explore your strengths and interests.",
         },
         {
-            icon: "🎯",
+            image: require("../../assets/images/welcomeScreen2.png"),
             description: "Set goals and track your progress as you grow.",
         },
         {
-            icon: "🚀",
+            image: require("../../assets/images/welcomeScreen3.png"),
             description: "Unlock your full potential and achieve your dreams!",
         },
     ];
@@ -51,7 +53,7 @@ export default function Welcome() {
             onMoveShouldSetPanResponder: (evt, gestureState) => {
                 // More lenient horizontal swipe detection
                 return (
-                    Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && 
+                    Math.abs(gestureState.dx) > Math.abs(gestureState.dy) &&
                     Math.abs(gestureState.dx) > 10
                 );
             },
@@ -60,7 +62,7 @@ export default function Welcome() {
             },
             onPanResponderRelease: (evt, gestureState) => {
                 const swipeThreshold = 30; // Reduced threshold for easier swiping
-                
+
                 if (gestureState.dx < -swipeThreshold) {
                     // Swipe left - go to next slide
                     goToNextSlide();
@@ -78,7 +80,7 @@ export default function Welcome() {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 3000);
+        }, 5000);
         return () => clearInterval(interval);
     }, [slides.length]);
 
@@ -89,21 +91,21 @@ export default function Welcome() {
                 <Text style={styles.welcomeContainerTitle}>DiscoverYou</Text>
                 <Text style={styles.welcomeContainerDescription}>Find your potential!</Text>
             </View>
-            
+
             <View style={styles.sliderContainer} {...panResponder.panHandlers}>
                 {/* Slider */}
                 <View style={styles.slide}>
                     <View style={styles.slideImageContainer}>
-                        <Text style={styles.slideImage}>
-                            {slides[currentSlide].icon}
-                        </Text>
+                        <Image
+                            source={slides[currentSlide].image}
+                            style={{ transform: "scale(1.4)", width: '100%', height: '100%', resizeMode: "contain" }}
+                        />
                     </View>
                     <Text style={styles.slideDescription}>
                         {slides[currentSlide].description}
                     </Text>
                 </View>
-                
-                {/* Indicators */}
+
                 <View style={styles.indicatorContainer}>
                     {slides.map((_, idx) => (
                         <Pressable
@@ -119,16 +121,12 @@ export default function Welcome() {
             </View>
 
             <View style={styles.buttonContainer}>
-                <Pressable onPress={() => router.push("/(auth)/register")}>
-                    <View style={styles.createAccountButton}>
-                        <Text style={styles.createAccountButtonText}>Create New Account</Text>
-                    </View>
-                </Pressable>
-                <Pressable onPress={() => router.push("/(auth)/login")}>
-                    <View style={styles.loginButton}>
-                        <Text style={styles.loginButtonText}>Login</Text>
-                    </View>
-                </Pressable>
+                <TouchableOpacity style={styles.createAccountButton} onPress={() => router.push("/(auth)/register")}>
+                    <Text style={styles.createAccountButtonText}>Create New Account</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(auth)/login")}>
+                    <Text style={styles.loginButtonText}>Login</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -138,31 +136,32 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: "#FFFFFF"
     },
     welcomeContainer: {
-        padding: 42,
+        marginTop: 42,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    welcomeContainerTitle: { 
-        fontSize: 36, 
-        fontWeight: "bold", 
-        color: '#FF6600' 
+    welcomeContainerTitle: {
+        fontSize: 36,
+        fontWeight: "bold",
+        color: '#FF6600'
     },
-    welcomeContainerSemiTitle: { 
+    welcomeContainerSemiTitle: {
         color: 'rgba(0, 0, 0, 0.8)',
-        fontSize: 24, 
+        fontSize: 24,
         fontWeight: "bold"
     },
-    welcomeContainerDescription: { 
+    welcomeContainerDescription: {
         fontSize: 16,
         color: 'rgba(0, 0, 0, 0.6)',
         marginTop: 12
     },
-    buttonContainer: { 
+    buttonContainer: {
         width: '100%',
-        padding: 12,
+        padding: 14,
     },
     createAccountButton: {
         backgroundColor: '#FF6600',
@@ -189,11 +188,12 @@ const styles = StyleSheet.create({
     loginButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
+        color: 'rgba(0, 0, 0, 0.6)',
     },
     sliderContainer: {
         width: '100%',
         alignItems: 'center',
-        marginBottom: 32,
+        // backgroundColor: "blue"
     },
     slide: {
         width: 260,
@@ -201,38 +201,35 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 16,
         padding: 24,
-        margin: 16,
     },
     slideImageContainer: {
-        width: 160,
-        height: 160,
-        borderRadius: 80,
+        width: 260,
+        height: 260,
+        borderRadius: 130,
         backgroundColor: '#FFE5D0',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 16,
-    },
-    slideImage: {
-        fontSize: 80,
+        marginBottom: 32,
     },
     slideDescription: {
         fontSize: 15,
         color: 'rgba(0, 0, 0, 0.6)',
         textAlign: 'center',
         margin: 4,
+        // backgroundColor: "red"
     },
     indicatorContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 8,
+        // backgroundColor: "red"
     },
     indicator: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
+        width: 10,
+        height: 10,
+        borderRadius: 5,
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        margin: 4,
+        marginHorizontal: 4,
     },
     activeIndicator: {
         backgroundColor: '#FF6600',

@@ -1,28 +1,52 @@
-import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { AuthProvider, useAuth } from "./authContext";
+import { serverUrl } from "../components/constants";
+import { Stack, useRouter, useSegments } from "expo-router";
 
-export default function RootLayout() {
+function RootLayoutInner() {
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const segments = useSegments();
+  const router = useRouter();
 
+  // Check authentication on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("http://10.15.4.2:8000/auth");
-        const data = await res.json();
-
-        console.log("Auth status:", data.isAuthenticate);
-        setIsAuthenticated(data.isAuthenticate);
-      } catch (err) {
-        console.log("Auth check failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    function checkAuth() {
+      fetch(`${serverUrl}/auth`, {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(res => res.json())
+        .then(data => {
+          setIsAuthenticated(data.isAuthenticate);
+        })
+        .catch(function (err) {
+          console.log("Auth check failed:", err);
+          setIsAuthenticated(false);
+        })
+        .finally(function () {
+          setLoading(false);
+        });
+    }
     checkAuth();
   }, []);
+
+  // Handle navigation based on auth state changes
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (isAuthenticated && inAuthGroup) {
+      // User is authenticated but in auth screens, redirect to tabs
+      router.replace("/(tabs)");
+    } else if (!isAuthenticated && !inAuthGroup) {
+      // User is not authenticated but not in auth screens, redirect to login
+      router.replace("/(auth)/welcome"); // Change this to your actual auth screen name
+    }
+  }, [isAuthenticated]);
 
   if (loading) {
     return (
@@ -44,5 +68,13 @@ export default function RootLayout() {
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutInner />
+    </AuthProvider>
   );
 }
