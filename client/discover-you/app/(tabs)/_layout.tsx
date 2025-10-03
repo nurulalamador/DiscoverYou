@@ -129,7 +129,7 @@ const getTitle = (name: string) => {
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingVertical: 14,
     backgroundColor: "#FFFFFF",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     // elevation: 6,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "600",
     color: "rgba(0, 0, 0, 0.8)",
   },

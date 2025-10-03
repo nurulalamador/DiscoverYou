@@ -63,7 +63,10 @@ function RootLayoutInner() {
           {isAuthenticated ? (
             <Stack.Screen name="(tabs)" />
           ) : (
-            <Stack.Screen name="(auth)" />
+            <>
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(course)" />
+            </>
           )}
         </Stack>
       </SafeAreaView>

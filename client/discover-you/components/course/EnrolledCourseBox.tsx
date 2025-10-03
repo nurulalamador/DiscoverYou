@@ -2,10 +2,12 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getCategoryIcon, serverUrl } from "../constants";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 
-function BrowseCourseBox({ course }: any) {
+function EnrolledCourseBox({ course }: any) {
+    const router = useRouter();
     return (
-        <TouchableOpacity style={styles.courseBox}>
+        <TouchableOpacity style={styles.courseBox} onPress={()=>{router.push({ pathname: "/(course)/details", params: {courseId: course.id}})}}>
             {
                 course.cover_image_url ?
                     <Image
@@ -21,7 +23,7 @@ function BrowseCourseBox({ course }: any) {
 
                 <Text numberOfLines={2} style={styles.title}>{course.name}</Text>
                 <View style={styles.category}>
-                    <FontAwesome6 name={getCategoryIcon(course.category)} size={14} color="#FF6600" solid />
+                    <FontAwesome6 name={getCategoryIcon(course.category)} style={styles.categoryIcon} solid />
 
                     <Text numberOfLines={1} style={styles.categoryText}>{course.category}</Text>
                 </View>
@@ -47,6 +49,31 @@ function BrowseCourseBox({ course }: any) {
                         </Text>
                     </View>
                 </View>
+                <View>
+                    <View style={styles.progressTexts}>
+                        <Text style={styles.progressTitle}>Progress</Text>
+                        <Text style={styles.progressPercentage}>{parseInt(course.completed)}%</Text>
+                    </View>
+                    <View
+                        style={{
+                            height: 10,
+                            width: "100%",
+                            backgroundColor: "rgba(0,0,0,0.1)",
+                            borderRadius: 5,
+                            overflow: "hidden",
+                            borderWidth: 1,
+                            borderColor: "rgba(0,0,0,0.2)"
+                        }}
+                    >
+                        <View
+                            style={{
+                                height: "100%",
+                                width: `${parseInt(course.completed)}%`,
+                                backgroundColor: "#4CAF50",
+                            }}
+                        />
+                    </View>
+                </View>
             </View>
         </TouchableOpacity>
     )
@@ -54,7 +81,6 @@ function BrowseCourseBox({ course }: any) {
 
 const styles = StyleSheet.create({
     courseBox: {
-        width: 325,
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         margin: 6,
@@ -69,8 +95,8 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,0.6)'
     },
     previewImage: {
-        width: 124,
-        height: 124,
+        width: 152,
+        height: 152,
         margin: 8,
         borderRadius: 8,
         resizeMode: "contain",
@@ -78,8 +104,8 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.2)"
     },
     pseudoPreviewImage: {
-        width: 124,
-        height: 124,
+        width: 152,
+        height: 152,
         margin: 8,
         borderRadius: 8,
         backgroundColor: "rgba(0,0,0,0.1)",
@@ -130,11 +156,15 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         maxWidth: '100%'
     },
-    categoryText: { 
-        color: "#FF6600", 
-        fontWeight: "bold", 
-        fontSize: 12, 
-    maxWidth: 120 },
+    categoryText: {
+        color: "#FF6600",
+        fontWeight: "bold",
+        fontSize: 12
+    },
+    categoryIcon: {
+        fontSize: 14,
+        color: "#FF6600"
+    },
     instructorContainer: {
         flexDirection: "row",
         alignItems: "center"
@@ -148,7 +178,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
+    },
+    progressTexts: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 6,
+        marginBottom: 4
+    },
+    progressTitle: {
+        fontSize: 11,
+        color: 'rgba(0,0,0,0.6)'
+    },
+    progressPercentage: {
+        fontSize: 11,
+        fontWeight: "bold",
+        color: 'rgba(0,0,0,0.6)'
     }
 })
 
-export default BrowseCourseBox;
+export default EnrolledCourseBox;

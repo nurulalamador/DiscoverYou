@@ -1,5 +1,6 @@
 import { serverUrl } from "@/components/constants";
 import BrowseCourseBox from "@/components/course/BrowseCourseBox";
+import EnrolledCourseBox from "@/components/course/EnrolledCourseBox";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
@@ -12,18 +13,20 @@ type Course = {
 }
 
 export default function Course() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [exploreCourses, setExploreCourses] = useState<Course[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    function checkAuth() {
+    function loadData() {
       fetch(`${serverUrl}/course/all`, {
         method: "GET",
         credentials: "include"
       })
         .then(res => res.json())
         .then(data => {
-          setCourses(data.courses);
+          setExploreCourses(data.exploreCourses);
+          setEnrolledCourses(data.enrolledCourses);
         })
         .catch(function (err) {
           console.log("Course data fetching failed:", err);
@@ -32,7 +35,7 @@ export default function Course() {
           setLoading(false);
         });
     }
-    checkAuth();
+    loadData();
   }, []);
 
   return (
@@ -41,7 +44,7 @@ export default function Course() {
       <Text style={styles.title}>Explore Courses</Text>
       <ScrollView horizontal style={{ width: "100%", flexDirection: "row" }} contentContainerStyle={{ paddingHorizontal: 8 }}>
         {
-          courses.map(function (course) {
+          exploreCourses.map(function (course) {
             return <BrowseCourseBox key={course.id} course={course} />
           })
         }
@@ -52,6 +55,14 @@ export default function Course() {
       </TouchableOpacity>
       <View style={styles.divider} />
       <Text style={styles.title}>Enrolled Courses</Text>
+      <View style={{paddingHorizontal: 8}}>
+        {
+          enrolledCourses.map(function (course) {
+            return <EnrolledCourseBox key={course.id} course={course} />
+          })
+        }
+      </View>
+      <View style={styles.gap}></View>
     </ScrollView>
   );
 }
@@ -65,7 +76,7 @@ const styles = StyleSheet.create({
     color: 'rgba(0,0,0,0.6)'
   },
   gap: {
-    height: 8
+    height: 10
   },
   allButton: {
     backgroundColor: '#FF6600',
