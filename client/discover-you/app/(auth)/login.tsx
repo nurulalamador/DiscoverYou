@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { serverUrl } from "@/components/constants";
-import { useAuth } from "../authContext";
+import useAuth from "../authContext";
 import { FontAwesome6 } from "@expo/vector-icons";
 
 
@@ -73,6 +73,7 @@ export default function Login() {
         <Image
           source={require("../../assets/images/logoOrange.svg")}
           style={styles.logo}
+          contentFit="contain"
         />
       </View>
       <View style={styles.welcomeTextContainer}>
@@ -172,7 +173,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 260,
     height: 100,
-    resizeMode: 'contain',
     marginTop: 24
   },
   welcomeTextContainer: {

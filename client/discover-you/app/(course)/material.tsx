@@ -4,9 +4,8 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import { Image } from "expo-image";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { getCategoryIcon, serverUrl } from "@/components/constants";
-import MaterialBox from "@/components/course/MaterialBox";
-import { ResizeMode, Video } from "expo-av";
-
+import { useVideoPlayer, VideoView } from "expo-video";
+import InsideMaterialBox from "@/components/course/InsideMaterialBox";
 
 
 export default function Material() {
@@ -18,8 +17,18 @@ export default function Material() {
 
     const router = useRouter();
 
-    const videoUri = `${serverUrl}/course/material/${materialId}`;
-    console.log(videoUri);
+    const [videoSource, setVideoSource] = useState(`${serverUrl}/course/material/${materialId}`);
+    // console.log(videoSource);
+
+    const player = useVideoPlayer(videoSource, (player) => {
+        player.loop = true; // Loop the video
+        player.play(); // Autoplay the video
+    });
+
+    function changeMaterial(materialId : any) {
+        setMaterial(materials.filter(function (material: any) { return material.id == materialId })[0]);
+        setVideoSource(`${serverUrl}/course/material/${materialId}`)
+    }
 
     useEffect(() => {
         function loadData() {
@@ -43,8 +52,6 @@ export default function Material() {
         loadData();
     }, []);
 
-
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -57,19 +64,30 @@ export default function Material() {
             </View>
             <ScrollView style={styles.contentContainer}>
                 <View style={styles.gap} />
-                {material ?
+                {material && course ?
                     <View style={styles.videoBox}>
-                        <Video
-                            source={{ uri: videoUri }}
+                        <VideoView
                             style={styles.video}
-                            useNativeControls
-                            resizeMode={ResizeMode.CONTAIN}
+                            player={player}
+                            fullscreenOptions={
+                                {
+                                    enable: true,
+                                    orientation: 'landscape'
+                                }
+                            } // Allow fullscreen toggle
+                            allowsPictureInPicture // Allow picture-in-picture mode
+                            nativeControls // Use native video controls
                         />
                         <View style={styles.videoDetails}>
                             <Text style={styles.title}>{material.name}</Text>
+                            <Text style={styles.semiTitle}>{course.name}</Text>
+                            <View style={styles.category}>
+                                <FontAwesome6 name="video" style={styles.categoryIcon} solid />
+                                <Text numberOfLines={1} style={styles.categoryText}>Video Lecture</Text>
+                            </View>
                         </View>
-                    </View>  
-                    : <></>  
+                    </View>
+                    : <></>
                 }
                 <View style={styles.contentBox}>
                     <Text style={styles.materialTitle}>Course Contents</Text>
@@ -77,8 +95,8 @@ export default function Material() {
                     {
                         (course && materials) ?
                             materials.length ?
-                                materials.map(function (material) {
-                                    return <MaterialBox key={material.id} material={material} isEnrolled={course.is_enrolled} isActive={materialId == material.id} />
+                                materials.map(function (materialProp) {
+                                    return <InsideMaterialBox key={materialProp.id} material={materialProp} isEnrolled={course.is_enrolled} isActive={material.id == materialProp.id} onPressFunction={()=>{changeMaterial(materialProp.id)}}/>
                                 }) :
                                 <View style={styles.notFound}>
                                     <FontAwesome6 name="file" style={styles.notFoundIcon} solid />
@@ -166,13 +184,19 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginHorizontal: 8,
-        marginVertical: 12,
+        marginVertical: 2,
         color: "rgba(0,0,0,0.8)"
     },
+    semiTitle: {
+        marginHorizontal: 8,
+        marginVertical: 2,
+        color: "rgba(0,0,0,0.6)",
+        fontSize: 14
+    },
     category: {
-        backgroundColor: "rgba(255, 102, 0, 0.2)",
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
         paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingVertical: 6,
         borderRadius: 8,
         flexDirection: 'row',
         alignSelf: 'flex-start',
@@ -180,16 +204,18 @@ const styles = StyleSheet.create({
         gap: 8,
         overflow: 'hidden',
         maxWidth: '100%',
-        marginHorizontal: 8,
+        margin: 8,
+        marginTop: 12,
+        marginBottom: 6
     },
     categoryText: {
-        color: "#FF6600",
+        color: "rgba(0,0,0,0.5)",
         fontWeight: "bold",
         fontSize: 12
     },
     categoryIcon: {
         fontSize: 14,
-        color: "#FF6600"
+        color: "rgba(0,0,0,0.5)"
     },
     description: {
         fontSize: 13,
@@ -343,6 +369,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     videoDetails: {
-        padding: 8
+        padding: 10,
+        paddingVertical: 12
     }
 });

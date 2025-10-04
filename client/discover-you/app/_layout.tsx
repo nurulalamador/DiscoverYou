@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { AuthProvider, useAuth } from "./authContext";
+import useAuth, { AuthProvider } from "./authContext";
 import { serverUrl } from "../components/constants";
 import { Stack, useRouter, useSegments } from "expo-router";
 

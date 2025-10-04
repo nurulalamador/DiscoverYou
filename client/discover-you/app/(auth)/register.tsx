@@ -111,6 +111,7 @@ export default function Register() {
           <Image
             source={require("../../assets/images/logoOrange.svg")}
             style={styles.logo}
+            contentFit="contain"
           />
         </View>
         <View style={styles.welcomeTextContainer}>
@@ -136,6 +137,7 @@ export default function Register() {
           <Image
             source={require("../../assets/images/logoOrange.svg")}
             style={styles.logo}
+            contentFit="contain"
           />
         </View>
         <View style={styles.welcomeTextContainer}>
@@ -331,7 +333,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 260,
     height: 100,
-    resizeMode: 'contain',
     marginTop: 24
   },
   welcomeTextContainer: {

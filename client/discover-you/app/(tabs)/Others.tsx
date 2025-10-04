@@ -1,6 +1,6 @@
 import { serverUrl } from "@/components/constants";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
-import { useAuth } from "../authContext";
+import useAuth from "../authContext";
 
 export default function Others() {
   const { setIsAuthenticated } = useAuth();

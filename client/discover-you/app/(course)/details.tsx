@@ -59,6 +59,7 @@ export default function Details() {
                                     <Image
                                         source={{ uri: serverUrl + course.cover_image_url }}
                                         style={styles.previewImage}
+                                        contentFit="cover"
                                     /> :
                                     <View style={styles.pseudoPreviewImage}>
                                         <FontAwesome6 name="book" style={styles.pseudoPreviewImageIcon} />
@@ -79,6 +80,7 @@ export default function Details() {
                                         <Image
                                             source={{ uri: serverUrl + course.profile_picture_url }}
                                             style={styles.profilePicture}
+                                            contentFit="cover"
                                         /> :
                                         <View style={styles.pseudoProfilePicture}>
                                             <Text style={styles.pseudoProfilePictureText}>{course.instructor_name[0]}</Text>
@@ -125,7 +127,7 @@ export default function Details() {
                         (course && materials) ?
                             materials.length ?
                                 materials.map(function (material) {
-                                    return <MaterialBox key={material.id} material={material} isEnrolled={course.is_enrolled} isActive={false} />
+                                    return <MaterialBox key={material.id} material={material} isEnrolled={course.is_enrolled} />
                                 }) :
                                 <View style={styles.notFound}>
                                     <FontAwesome6 name="file" style={styles.notFoundIcon} solid />
@@ -202,7 +204,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 240,
         borderRadius: 8,
-        resizeMode: "cover",
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
     },
@@ -210,7 +211,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 240,
         borderRadius: 8,
-        resizeMode: "cover",
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
         backgroundColor: "rgba(0,0,0,0.1)",
@@ -276,7 +276,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        resizeMode: "contain",
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
         marginRight: 12

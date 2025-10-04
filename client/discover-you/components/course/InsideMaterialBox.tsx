@@ -4,31 +4,19 @@ import { getCategoryIcon, serverUrl } from "../constants";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
-function MaterialBox({
+function InsideMaterialBox({
   material,
-  isEnrolled
+  isEnrolled,
+  isActive,
+  onPressFunction
 }: {
   material: any; 
-  isEnrolled: boolean
+  isEnrolled: boolean;
+  isActive: boolean;
+  onPressFunction: () => void
 }) {
-    const router = useRouter();
-
-    function goToMaterial(){
-        isEnrolled ? 
-        router.push({ 
-            pathname: "/(course)/material", 
-            params: { 
-                courseId: material.course_id, 
-                materialId: material.id 
-            } 
-        })
-        : 
-        Alert.alert("Unenrolled Course", "Please Enroll To Access Materials")
-        ; 
-    }
-
     return (
-        <TouchableOpacity style={styles.materialBox} onPress={goToMaterial}>
+        <TouchableOpacity style={isActive ? styles.materialBoxActive : styles.materialBox} onPress={onPressFunction}>
             <FontAwesome6 name="video" style={styles.materialIcon} />
             <View style={styles.materialDetails}>
                 <Text style={styles.title}>{material.name}</Text>
@@ -92,4 +80,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default MaterialBox;
+export default InsideMaterialBox;

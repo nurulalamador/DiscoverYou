@@ -7,12 +7,13 @@ import { useRouter } from "expo-router";
 function EnrolledCourseBox({ course }: any) {
     const router = useRouter();
     return (
-        <TouchableOpacity style={styles.courseBox} onPress={()=>{router.push({ pathname: "/(course)/details", params: {courseId: course.id}})}}>
+        <TouchableOpacity style={styles.courseBox} onPress={() => { router.push({ pathname: "/(course)/details", params: { courseId: course.id } }) }}>
             {
                 course.cover_image_url ?
                     <Image
                         source={{ uri: serverUrl + course.cover_image_url }}
                         style={styles.previewImage}
+                        contentFit="cover"
                     /> :
                     <View style={styles.pseudoPreviewImage}>
                         <FontAwesome6 name="book" size={64} color="rgba(0,0,0,0.4)/" />
@@ -33,6 +34,7 @@ function EnrolledCourseBox({ course }: any) {
                             <Image
                                 source={{ uri: serverUrl + course.profile_picture_url }}
                                 style={styles.profilePicture}
+                                contentFit="cover"
                             /> :
                             <View style={styles.pseudoProfilePicture}>
                                 <Text style={styles.pseudoProfilePictureText}>{course.instructor_name[0]}</Text>
@@ -99,7 +101,6 @@ const styles = StyleSheet.create({
         height: 152,
         margin: 8,
         borderRadius: 8,
-        resizeMode: "contain",
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)"
     },
@@ -123,7 +124,6 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 15,
-        resizeMode: "contain",
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
         marginRight: 8

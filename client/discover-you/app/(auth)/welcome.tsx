@@ -99,6 +99,7 @@ export default function Welcome() {
                         <Image
                             source={slides[currentSlide].image}
                             style={styles.slideImage}
+                            contentFit="contain"
                         />
                     </View>
                     <Text style={styles.slideDescription}>
@@ -214,8 +215,7 @@ const styles = StyleSheet.create({
     slideImage: { 
         transform: "scale(1.4)", 
         width: '100%', 
-        height: '100%', 
-        resizeMode: "contain" 
+        height: '100%'
     },
     slideDescription: {
         fontSize: 15,
