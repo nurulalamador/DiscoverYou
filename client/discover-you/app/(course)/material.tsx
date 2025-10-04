@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         height: 8
     },
     contentBox: {
-        margin: 8,
+        margin: 6,
         backgroundColor: "#FFFFFF",
         borderWidth: 1,
         borderColor: "rgba(0, 0, 0, 0.1)",
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     videoBox: {
-        margin: 8,
+        margin: 6,
         backgroundColor: "#FFFFFF",
         borderWidth: 1,
         borderColor: "rgba(0, 0, 0, 0.1)",

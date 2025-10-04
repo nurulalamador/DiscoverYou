@@ -160,25 +160,31 @@ exports.getSingleCourse = (req, res) => {
     const userId = req.userId;
 
     connection.query(
-        `SELECT c.id, c.name, c.description, c.category, u.full_name AS instructor_name,
-                CASE 
-                    WHEN c.cover_image IS NOT NULL THEN CONCAT('/course/image/', c.id)
-                    ELSE NULL
-                END AS cover_image_url,
-                CASE 
-                    WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
-                    ELSE NULL
-                END AS profile_picture_url,
-                CASE 
-                    WHEN EXISTS (
-                        SELECT 1 
-                        FROM course_participants cp
-                        WHERE cp.course_id = c.id
-                        AND cp.participant_id = ?
-                    )
-                    THEN TRUE
-                    ELSE FALSE
-                END AS is_enrolled
+        `SELECT c.id, c.name, c.description, c.price, c.category, u.full_name AS instructor_name,
+            CASE 
+                WHEN c.cover_image IS NOT NULL THEN CONCAT('/course/image/', c.id)
+                ELSE NULL
+            END AS cover_image_url,
+            CASE 
+                WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                ELSE NULL
+            END AS profile_picture_url,
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM course_participants cp
+                    WHERE cp.course_id = c.id
+                    AND cp.participant_id = ?
+                )
+                THEN TRUE
+                ELSE FALSE
+            END AS is_enrolled,
+            (SELECT COUNT(*) 
+            FROM course_participants cp2 
+            WHERE cp2.course_id = c.id) AS total_participants,
+            (SELECT COUNT(*) 
+            FROM course_materials cm 
+            WHERE cm.course_id = c.id) AS total_materials
         FROM courses AS c
         JOIN users AS u
         ON c.instructor_id = u.id

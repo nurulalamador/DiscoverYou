@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     color: 'rgba(0,0,0,0.6)'
   },
   gap: {
-    height: 10
+    height: 8
   },
   allButton: {
     backgroundColor: '#FF6600',

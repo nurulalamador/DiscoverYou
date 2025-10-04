@@ -101,13 +101,13 @@ export default function Details() {
                             <View style={styles.detailsContainer}>
                                 <View style={styles.detail}>
                                     {/* <FontAwesome6 name="user" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>45</Text>
+                                    <Text style={styles.detailTitle}>{course.total_participants}</Text>
                                     <Text style={styles.detailSemiTitle}>Students</Text>
                                 </View>
                                 <View style={styles.detailDivider} />
                                 <View style={styles.detail}>
                                     {/* <FontAwesome6 name="video" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>32</Text>
+                                    <Text style={styles.detailTitle}>{course.total_materials}</Text>
                                     <Text style={styles.detailSemiTitle}>Materials</Text>
                                 </View>
                                 <View style={styles.detailDivider} />
@@ -144,7 +144,7 @@ export default function Details() {
                 <View style={styles.enrollContainer}>
                     <View style={styles.coursePrice}>
                         <Text style={styles.coursePriceSemiTitle}>Course Fee</Text>
-                        <Text style={styles.coursePriceTitle}>৳100</Text>
+                        <Text style={styles.coursePriceTitle}>৳{parseFloat(course.price)}</Text>
                     </View>
                     <TouchableOpacity style={styles.enrolledButton}>
                         <Text style={styles.enrolledButtonText}>Enroll</Text>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
         height: 8
     },
     contentBox: {
-        margin: 8,
+        margin: 6,
         backgroundColor: "#FFFFFF",
         borderWidth: 1,
         borderColor: "rgba(0, 0, 0, 0.1)",
