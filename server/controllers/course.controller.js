@@ -34,6 +34,40 @@ exports.getCourseImage = (req, res) => {
     );
 };
 
+exports.getMaterial = (req, res) => {
+    const materialId = req.params.id;
+
+    connection.query(
+        'SELECT media_blob, media_type FROM course_materials WHERE id = ?',
+        [materialId],
+        function (err, results) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error.",
+                    error: err
+                });
+            }
+
+            if (results.length === 0 || !results[0].media_blob) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Material not found."
+                });
+            }
+
+            // Assuming cover_image is stored as BLOB or binary
+            const material = results[0].media_blob;
+
+            res.writeHead(200, {
+                'Content-Type': results[0].media_type, // adjust based on actual image type
+                'Content-Length': material.length
+            });
+            res.end(material);
+        }
+    );
+};
+
 exports.getAllCourses = (req, res) => {
     const userId = req.userId;
 
@@ -134,12 +168,22 @@ exports.getSingleCourse = (req, res) => {
                 CASE 
                     WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
                     ELSE NULL
-                END AS profile_picture_url
+                END AS profile_picture_url,
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 
+                        FROM course_participants cp
+                        WHERE cp.course_id = c.id
+                        AND cp.participant_id = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END AS is_enrolled
         FROM courses AS c
         JOIN users AS u
         ON c.instructor_id = u.id
         WHERE c.id = ?;`,
-        [courseId],
+        [userId, courseId],
         function (err, courseResults) {
             if (err) {
                 return res.status(500).json({
@@ -150,10 +194,24 @@ exports.getSingleCourse = (req, res) => {
             }
 
             connection.query(
-                `SELECT cm.id, cm.course_id, cm.name, cm.media_type
+                `SELECT cm.id, cm.course_id, cm.name, cm.media_type,
+                    CASE 
+                        WHEN cm.media_blob IS NOT NULL THEN CONCAT('/course/material/', cm.id)
+                        ELSE NULL
+                    END AS material_url,
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1 
+                            FROM course_material_completed cmc
+                            WHERE cmc.material_id = cm.id
+                            AND cmc.participant_id = ?
+                        )
+                        THEN TRUE
+                        ELSE FALSE
+                    END AS is_completed
                 FROM course_materials AS cm
                 WHERE cm.course_id = ?;`,
-                [courseId],
+                [userId, courseId],
                 function (err, materialResults) {
                     if (err) {
                         return res.status(500).json({

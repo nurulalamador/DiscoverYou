@@ -1,4 +1,5 @@
-const serverUrl = 'http://192.168.10.100:8000';
+// const serverUrl = 'http://192.168.10.100:8000';
+const serverUrl = 'http://10.15.4.21:8000';
 
 function getCategoryIcon(category) {
     switch(category) {

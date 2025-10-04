@@ -2,6 +2,7 @@ import { serverUrl } from "@/components/constants";
 import BrowseCourseBox from "@/components/course/BrowseCourseBox";
 import EnrolledCourseBox from "@/components/course/EnrolledCourseBox";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -13,6 +14,8 @@ type Course = {
 }
 
 export default function Course() {
+  const router = useRouter();
+
   const [exploreCourses, setExploreCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +52,7 @@ export default function Course() {
           })
         }
       </ScrollView>
-      <TouchableOpacity style={styles.allButton}>
+      <TouchableOpacity style={styles.allButton} onPress={() => {router.push("/(course)/browse")}}>
         <Text style={styles.allButtonText}>Browse All Courses</Text>
         <FontAwesome6 name="arrow-right" style={styles.allButtonIcon} />
       </TouchableOpacity>
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
     marginLeft: 8
   },
   divider: {
-    borderBottomColor: "rgba(0,0,0,0.2)",
+    borderBottomColor: "rgba(0,0,0,0.1)",
     borderBottomWidth: 1,
     marginVertical: 12,
     width: "80%",

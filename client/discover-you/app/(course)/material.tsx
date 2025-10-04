@@ -5,16 +5,21 @@ import { Image } from "expo-image";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { getCategoryIcon, serverUrl } from "@/components/constants";
 import MaterialBox from "@/components/course/MaterialBox";
+import { ResizeMode, Video } from "expo-av";
 
 
 
-export default function Details() {
-    const { courseId } = useLocalSearchParams();
+export default function Material() {
+    const { courseId, materialId } = useLocalSearchParams();
     const [course, setCourse] = useState<any>();
     const [materials, setMaterials] = useState<any[]>([]);
+    const [material, setMaterial] = useState<any>();
     const [loading, setLoading] = useState(true);
 
     const router = useRouter();
+
+    const videoUri = `${serverUrl}/course/material/${materialId}`;
+    console.log(videoUri);
 
     useEffect(() => {
         function loadData() {
@@ -26,6 +31,7 @@ export default function Details() {
                 .then(data => {
                     setCourse(data.course[0]);
                     setMaterials(data.materials);
+                    setMaterial(data.materials.filter(function (material: any) { return material.id == materialId })[0]);
                 })
                 .catch(function (err) {
                     console.log("Course data fetching failed:", err);
@@ -46,77 +52,24 @@ export default function Details() {
                     <TouchableOpacity onPress={() => { router.back() }}>
                         <FontAwesome6 name="arrow-left" style={styles.headerBackIcon} />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Course</Text>
+                    <Text style={styles.headerTitle}>Material</Text>
                 </View>
             </View>
             <ScrollView style={styles.contentContainer}>
                 <View style={styles.gap} />
-                {
-                    course ?
-                        <View style={styles.contentBox}>
-                            {
-                                course.cover_image_url ?
-                                    <Image
-                                        source={{ uri: serverUrl + course.cover_image_url }}
-                                        style={styles.previewImage}
-                                    /> :
-                                    <View style={styles.pseudoPreviewImage}>
-                                        <FontAwesome6 name="book" style={styles.pseudoPreviewImageIcon} />
-                                    </View>
-                            }
-                            <Text style={styles.title}>{course.name}</Text>
-                            <View style={styles.category}>
-                                <FontAwesome6 name={getCategoryIcon(course.category)} style={styles.categoryIcon} solid />
-                                <Text numberOfLines={1} style={styles.categoryText}>{course.category}</Text>
-                            </View>
-                            <Text style={styles.description}>
-                                {course.description}
-                            </Text>
-                            <View style={styles.divider} />
-                            <View style={styles.instructorContainer}>
-                                {
-                                    course.profile_picture_url ?
-                                        <Image
-                                            source={{ uri: serverUrl + course.profile_picture_url }}
-                                            style={styles.profilePicture}
-                                        /> :
-                                        <View style={styles.pseudoProfilePicture}>
-                                            <Text style={styles.pseudoProfilePictureText}>{course.instructor_name[0]}</Text>
-                                        </View>
-                                }
-
-
-                                <View>
-                                    <Text style={styles.instructorSemiTitle}>
-                                        Instructed By
-                                    </Text>
-                                    <Text style={styles.instructorTitle}>
-                                        {course.instructor_name}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.divider} />
-                            <View style={styles.detailsContainer}>
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="user" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>45</Text>
-                                    <Text style={styles.detailSemiTitle}>Students</Text>
-                                </View>
-                                <View style={styles.detailDivider} />
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="video" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>32</Text>
-                                    <Text style={styles.detailSemiTitle}>Materials</Text>
-                                </View>
-                                <View style={styles.detailDivider} />
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="star" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>5.0</Text>
-                                    <Text style={styles.detailSemiTitle}>Ratings</Text>
-                                </View>
-                            </View>
+                {material ?
+                    <View style={styles.videoBox}>
+                        <Video
+                            source={{ uri: videoUri }}
+                            style={styles.video}
+                            useNativeControls
+                            resizeMode={ResizeMode.CONTAIN}
+                        />
+                        <View style={styles.videoDetails}>
+                            <Text style={styles.title}>{material.name}</Text>
                         </View>
-                        : <></>
+                    </View>  
+                    : <></>  
                 }
                 <View style={styles.contentBox}>
                     <Text style={styles.materialTitle}>Course Contents</Text>
@@ -125,7 +78,7 @@ export default function Details() {
                         (course && materials) ?
                             materials.length ?
                                 materials.map(function (material) {
-                                    return <MaterialBox key={material.id} material={material} isEnrolled={course.is_enrolled} isActive={false} />
+                                    return <MaterialBox key={material.id} material={material} isEnrolled={course.is_enrolled} isActive={materialId == material.id} />
                                 }) :
                                 <View style={styles.notFound}>
                                     <FontAwesome6 name="file" style={styles.notFoundIcon} solid />
@@ -136,19 +89,6 @@ export default function Details() {
                 </View>
                 <View style={styles.gap} />
             </ScrollView>
-            {
-                course &&
-                !course.is_enrolled &&
-                <View style={styles.enrollContainer}>
-                    <View style={styles.coursePrice}>
-                        <Text style={styles.coursePriceSemiTitle}>Course Fee</Text>
-                        <Text style={styles.coursePriceTitle}>৳100</Text>
-                    </View>
-                    <TouchableOpacity style={styles.enrolledButton}>
-                        <Text style={styles.enrolledButtonText}>Enroll</Text>
-                    </TouchableOpacity>
-                </View>
-            }
         </View>
     );
 }
@@ -185,7 +125,8 @@ const styles = StyleSheet.create({
         margin: 4
     },
     contentContainer: {
-        paddingHorizontal: 8
+        paddingHorizontal: 8,
+        width: "100%"
     },
     gap: {
         height: 8
@@ -387,4 +328,21 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 15,
     },
+    videoBox: {
+        margin: 8,
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "rgba(0, 0, 0, 0.1)",
+        borderRadius: 14,
+        overflow: "hidden"
+    },
+    video: {
+        width: "100%",
+        aspectRatio: 16 / 9,
+        borderBottomColor: 'rgba(0,0,0,0.2)',
+        borderBottomWidth: 1
+    },
+    videoDetails: {
+        padding: 8
+    }
 });

@@ -98,7 +98,7 @@ export default function Welcome() {
                     <View style={styles.slideImageContainer}>
                         <Image
                             source={slides[currentSlide].image}
-                            style={{ transform: "scale(1.4)", width: '100%', height: '100%', resizeMode: "contain" }}
+                            style={styles.slideImage}
                         />
                     </View>
                     <Text style={styles.slideDescription}>
@@ -210,6 +210,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 32,
+    },
+    slideImage: { 
+        transform: "scale(1.4)", 
+        width: '100%', 
+        height: '100%', 
+        resizeMode: "contain" 
     },
     slideDescription: {
         fontSize: 15,

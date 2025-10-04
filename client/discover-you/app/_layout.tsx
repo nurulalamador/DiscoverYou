@@ -59,16 +59,16 @@ function RootLayoutInner() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          {isAuthenticated ? (
+        {isAuthenticated ? (
+          <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
-          ) : (
-            <>
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(course)" />
-            </>
-          )}
-        </Stack>
+          </Stack>
+        ) : (
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(course)" />
+          </Stack>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

@@ -4,9 +4,8 @@ import { getCategoryIcon, serverUrl } from "../constants";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
-function BrowseCourseBox({ course }: any) {
+function CourseBox({ course }: any) {
     const router = useRouter();
-    
     return (
         <TouchableOpacity style={styles.courseBox} onPress={()=>{router.push({ pathname: "/(course)/details", params: {courseId: course.id}})}}>
             {
@@ -24,7 +23,7 @@ function BrowseCourseBox({ course }: any) {
 
                 <Text numberOfLines={2} style={styles.title}>{course.name}</Text>
                 <View style={styles.category}>
-                    <FontAwesome6 name={getCategoryIcon(course.category)} size={14} color="#FF6600" solid />
+                    <FontAwesome6 name={getCategoryIcon(course.category)} style={styles.categoryIcon} solid />
 
                     <Text numberOfLines={1} style={styles.categoryText}>{course.category}</Text>
                 </View>
@@ -57,7 +56,6 @@ function BrowseCourseBox({ course }: any) {
 
 const styles = StyleSheet.create({
     courseBox: {
-        width: 325,
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         margin: 6,
@@ -67,13 +65,13 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.1)"
     },
     title: {
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
     },
     previewImage: {
-        width: 124,
-        height: 124,
+        width: 130,
+        height: 130,
         margin: 8,
         borderRadius: 8,
         resizeMode: "contain",
@@ -81,8 +79,8 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.2)"
     },
     pseudoPreviewImage: {
-        width: 124,
-        height: 124,
+        width: 130,
+        height: 130,
         margin: 8,
         borderRadius: 8,
         backgroundColor: "rgba(0,0,0,0.1)",
@@ -133,11 +131,15 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         maxWidth: '100%'
     },
-    categoryText: { 
-        color: "#FF6600", 
-        fontWeight: "bold", 
-        fontSize: 12, 
-    maxWidth: 120 },
+    categoryText: {
+        color: "#FF6600",
+        fontWeight: "bold",
+        fontSize: 12
+    },
+    categoryIcon: {
+        fontSize: 14,
+        color: "#FF6600"
+    },
     instructorContainer: {
         flexDirection: "row",
         alignItems: "center"
@@ -151,7 +153,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
+    },
+    progressTexts: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 6,
+        marginBottom: 4
+    },
+    progressTitle: {
+        fontSize: 11,
+        color: 'rgba(0,0,0,0.6)'
+    },
+    progressPercentage: {
+        fontSize: 11,
+        fontWeight: "bold",
+        color: 'rgba(0,0,0,0.6)'
     }
 })
 
-export default BrowseCourseBox;
+export default CourseBox;
