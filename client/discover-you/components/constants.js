@@ -1,5 +1,20 @@
-const serverUrl = 'http://192.168.10.100:8000';
+// const serverUrl = 'http://192.168.10.100:8000';
 // const serverUrl = 'http://10.15.4.21:8000';
+
+const serverUrl = 'http://10.15.29.132:8000';
+
+const categories = [
+    "Music and Singing",
+    "Graphics Designing",
+    "Web Development",
+    "Literature",
+    "Competitive Programming",
+    "Dancing",
+    "App Development",
+    "Arts and Crafts",
+    "Gaming",
+    "Debating"
+]
 
 function getCategoryIcon(category) {
     switch(category) {
@@ -28,4 +43,4 @@ function getCategoryIcon(category) {
     }
 }
 
-export { serverUrl, getCategoryIcon };
+export { serverUrl, getCategoryIcon, categories };
