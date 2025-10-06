@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import useAuth from "../authContext";
 
 export default function Others() {
-  const { setIsAuthenticated } = useAuth();
+  const { user, setIsAuthenticated } = useAuth();
 
   function handleLogout() {
     fetch(`${serverUrl}/auth/logout`, {
@@ -38,7 +38,7 @@ export default function Others() {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: '#EEEEEE' }}>
-      <Text>Others</Text>
+      <Text>Welcome, {user.full_name}</Text>
       <TouchableOpacity style={{backgroundColor: "#FF6600", padding: 10, borderRadius: 8}} onPress={handleLogout}>
         <Text style={{color: "#FFFFFF"}}>Logout</Text>
       </TouchableOpacity>

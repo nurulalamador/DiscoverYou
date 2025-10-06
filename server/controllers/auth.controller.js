@@ -3,10 +3,33 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.index = async (req, res) => {
-    res.status(200).json({
-        isAuthenticate: true,
-        message: "User is authenticated.",
-    });
+    const userId = req.userId;
+
+    connection.query(
+        `SELECT u.id, u.full_name, u.email, u.username, u.gender, u.date_of_birth, mobile_no,
+            CASE 
+                WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                ELSE NULL
+            END AS profile_picture_url
+        FROM users AS u
+        WHERE u.id = ?`,
+        [userId],
+        function (err, results) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error.",
+                    error: err
+                });
+            }
+
+            res.status(200).json({
+                isAuthenticate: true,
+                message: "User is authenticated.",
+                user: results[0]
+            });
+        }
+    );
 };
 
 exports.login = async (req, res) => {
@@ -54,7 +77,7 @@ exports.login = async (req, res) => {
                     const token = jwt.sign(
                         { id: user.id, username: user.username, email: user.email, role: user.role },
                         process.env.JWT_SECRET,
-                        { expiresIn: '1d' } 
+                        { expiresIn: '1d' }
                     );
                     res.cookie(process.env.COOKIE_NAME, token, {
                         httpOnly: true,

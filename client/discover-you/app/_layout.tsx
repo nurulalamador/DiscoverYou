@@ -6,7 +6,7 @@ import { serverUrl } from "../components/constants";
 import { Stack, useRouter, useSegments } from "expo-router";
 
 function RootLayoutInner() {
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, setUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const segments = useSegments();
   const router = useRouter();
@@ -21,6 +21,7 @@ function RootLayoutInner() {
         .then(res => res.json())
         .then(data => {
           setIsAuthenticated(data.isAuthenticate);
+          setUser(data.user);
         })
         .catch(function (err) {
           console.log("Auth check failed:", err);

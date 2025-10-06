@@ -2,8 +2,12 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
 
-const { addPost } = require("../controllers/showcase.controller");
+const { addPost, uploadMiddleware, getPostMedia, getAllPosts, togglePostReaction } = require("../controllers/showcase.controller");
 
-router.post("/addPost", verifyToken, addPost);
+router.get("/posts", verifyToken, getAllPosts);
+router.post("/addPost", verifyToken, uploadMiddleware, addPost);
+router.get("/media/:id", getPostMedia);
+router.post("/toggleLike", verifyToken, togglePostReaction);
+
 
 module.exports = router;

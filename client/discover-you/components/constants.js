@@ -1,7 +1,6 @@
-// const serverUrl = 'http://192.168.10.100:8000';
+const serverUrl = 'http://192.168.10.100:8000';
 // const serverUrl = 'http://10.15.4.21:8000';
-
-const serverUrl = 'http://10.15.29.132:8000';
+// const serverUrl = 'http://10.15.29.132:8000';
 
 const categories = [
     "Music and Singing",
@@ -13,8 +12,41 @@ const categories = [
     "App Development",
     "Arts and Crafts",
     "Gaming",
+    "Robotics",
     "Debating"
-]
+];
+
+function timeAgo(isoDate) {
+  const now = new Date();
+  const past = new Date(isoDate);
+
+  const diff = now.getTime() - past.getTime(); // difference in milliseconds
+
+  const seconds = Math.floor(diff / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+
+  const years = Math.floor(days / 365);
+  return `${years}y ago`;
+}
+
+function formatDuration(seconds) {
+    if (!seconds) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
 
 function getCategoryIcon(category) {
     switch(category) {
@@ -38,9 +70,11 @@ function getCategoryIcon(category) {
             return "gamepad"; break;
         case "Debating": 
             return "users-line"; break;
+        case "Robotics": 
+            return "robot"; break;
         default: 
-            return "gamepad"; break;
+            return "star"; break;
     }
 }
 
-export { serverUrl, getCategoryIcon, categories };
+export { serverUrl, getCategoryIcon, categories, formatDuration, timeAgo };
