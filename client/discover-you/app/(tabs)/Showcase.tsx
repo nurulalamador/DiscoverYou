@@ -18,13 +18,6 @@ export default function Showcase() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'rgba(0,0,0,0.6)'
-  },
   gap: {
     height: 8
   },

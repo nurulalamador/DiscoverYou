@@ -6,6 +6,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { getCategoryIcon, serverUrl } from "@/components/constants";
 import MaterialBox from "@/components/course/MaterialBox";
 import CourseBox from "@/components/course/CourseBox";
+import Header from "@/components/common/Header";
 
 type Course = {
     id: number,
@@ -17,8 +18,6 @@ type Course = {
 export default function Browse() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
-
-    const router = useRouter();
 
     useEffect(() => {
         function loadData() {
@@ -44,14 +43,7 @@ export default function Browse() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerLeftContainer}>
-                    <TouchableOpacity onPress={() => { router.back() }}>
-                        <FontAwesome6 name="arrow-left" style={styles.headerBackIcon} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Browse Course</Text>
-                </View>
-            </View>
+            <Header title="Browse Courses" />
             <ScrollView style={styles.contentContainer}>
                 <View style={styles.gap} />
                 {

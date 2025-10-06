@@ -52,17 +52,23 @@ export default function Course() {
           })
         }
       </ScrollView>
-      <TouchableOpacity style={styles.allButton} onPress={() => {router.push("/(course)/browse")}}>
+      <TouchableOpacity style={styles.allButton} onPress={() => { router.push("/(course)/browse") }}>
         <Text style={styles.allButtonText}>Browse All Courses</Text>
         <FontAwesome6 name="arrow-right" style={styles.allButtonIcon} />
       </TouchableOpacity>
       <View style={styles.divider} />
       <Text style={styles.title}>Enrolled Courses</Text>
-      <View style={{paddingHorizontal: 8}}>
+      <View style={{ paddingHorizontal: 8 }}>
         {
-          enrolledCourses.map(function (course) {
-            return <EnrolledCourseBox key={course.id} course={course} />
-          })
+          enrolledCourses.length ?
+            enrolledCourses.map(function (course) {
+              return <EnrolledCourseBox key={course.id} course={course} />
+            })
+            :
+            <View style={styles.notFound}>
+              <FontAwesome6 name="book" style={styles.notFoundIcon} solid />
+              <Text style={styles.notFoundTitle}>No Enrolled Course</Text>
+            </View>
         }
       </View>
       <View style={styles.gap}></View>
@@ -107,5 +113,20 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     width: "80%",
     marginHorizontal: 'auto'
+  },
+  notFound: {
+    height: 280,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  notFoundIcon: {
+    fontSize: 80,
+    color: 'rgba(0,0,0,0.6)'
+  },
+  notFoundTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'rgba(0,0,0,0.6)',
+    marginTop: 16
   }
 })
