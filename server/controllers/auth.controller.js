@@ -38,13 +38,19 @@ exports.login = async (req, res) => {
 
         // Find user by email
         connection.query(
-            'SELECT * FROM users WHERE email = ? OR username = ?',
+            `SELECT  u.id, u.full_name, u.email, u.username, u.gender, u.date_of_birth, u.mobile_no, u.password,
+                CASE 
+                    WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                    ELSE NULL
+                END AS profile_picture_url 
+            FROM users u WHERE email = ? OR username = ?`,
             [email, email],
             async (err, results) => {
                 if (err) {
+                    throw err;
                     return res.status(500).json({
                         success: false,
-                        message: "Cannot connect to database.",
+                        message: "Cannot connect to database 2.",
                         error: err
                     });
                 }
@@ -94,7 +100,12 @@ exports.login = async (req, res) => {
                         user: {
                             id: user.id,
                             username: user.username,
-                            email: user.email
+                            email: user.email,
+                            full_name: user.full_name,
+                            profile_picture_url: user.profile_picture_url,
+                            gender: user.gender,
+                            date_of_birth: user.date_of_birth,
+                            mobile_no: user.mobile_no
                         }
                     });
                 });

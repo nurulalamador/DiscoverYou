@@ -8,7 +8,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 
 
 export default function Login() {
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated, setUser } = useAuth();
 
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -49,6 +49,7 @@ export default function Login() {
         if (data.success) {
           console.log("Login Successful", "Welcome back!");
           setIsAuthenticated(true);
+          setUser(data.user);
         }
         else {
           setErrorMessage(data.message || "Something went wrong.");
