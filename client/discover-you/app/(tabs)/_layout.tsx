@@ -1,8 +1,10 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 
 export default function TabsLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -13,7 +15,7 @@ export default function TabsLayout() {
               <TouchableOpacity style={styles.iconButton}>
                 <FontAwesome6 name="magnifying-glass" size={20} color="rgba(0,0,0,0.6)" solid/>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => router.push("/(message)/messages")}>
                 <FontAwesome6 name="comment" size={20} color="rgba(0,0,0,0.6)" solid/>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton}>
