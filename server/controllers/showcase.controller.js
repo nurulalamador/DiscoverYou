@@ -195,6 +195,107 @@ exports.getAllPosts = (req, res) => {
 };
 
 
+exports.getSinglePost = (req, res) => {
+    const postId = req.params.id;
+
+    const userId = req.userId;
+
+    connection.query(
+        `
+        SELECT 
+            sp.id,
+            sp.content,
+            sp.category,
+            sp.creator_id,
+            sp.created_at,
+            u.full_name AS creator_name,
+            CASE 
+                WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                ELSE NULL
+            END AS creator_profile_picture_url,
+            GROUP_CONCAT(
+                CASE 
+                    WHEN spm.id IS NOT NULL THEN CONCAT('/showcase/media/', spm.id)
+                    ELSE NULL
+                END
+            ) AS media_urls,
+            GROUP_CONCAT(
+                CASE
+                    WHEN spm.media_type IS NOT NULL THEN spm.media_type
+                    ELSE NULL
+                END
+            ) AS media_types,
+            (SELECT COUNT(*) 
+            FROM showcase_post_reactions spr 
+            WHERE spr.post_id = sp.id) AS total_reactions,
+            (SELECT COUNT(*) 
+            FROM showcase_post_comments spc 
+            WHERE spc.post_id = sp.id) AS total_comments,
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM showcase_post_reactions spr 
+                    WHERE spr.post_id = sp.id
+                    AND spr.reactor_id = ?
+                )
+                THEN TRUE
+                ELSE FALSE
+            END AS is_reacted
+        FROM showcase_posts AS sp
+        JOIN users AS u ON sp.creator_id = u.id
+        LEFT JOIN showcase_post_media AS spm ON sp.id = spm.post_id
+        WHERE sp.id = ?
+        GROUP BY sp.id;
+        `,
+        [userId, postId],
+        function (err, results) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error.",
+                    error: err
+                });
+            }
+            if (results.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Post not found."
+                });
+            }
+
+            let post = results[0];
+            let media = [];
+
+            if (post.media_urls) {
+                const urls = post.media_urls.split(",");
+                const types = post.media_types.split(",");
+                media = urls.map((url, i) => ({
+                    url,
+                    type: types[i]
+                }));
+            }
+
+            res.status(200).json({
+                success: true,
+                post: {
+                    id: post.id,
+                    content: post.content,
+                    category: post.category,
+                    creator_id: post.creator_id,
+                    creator_name: post.creator_name,
+                    created_at: post.created_at,
+                    total_reactions: post.total_reactions,
+                    total_comments: post.total_comments,
+                    is_reacted: post.is_reacted,
+                    creator_profile_picture_url: post.creator_profile_picture_url,
+                    media
+                }
+            });
+        }
+    );
+};
+
+
 exports.togglePostReaction = (req, res) => {
     const userId = req.userId;        // reactor_id
     const { postId } = req.body;      // post_id sent from frontend

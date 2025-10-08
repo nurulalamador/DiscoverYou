@@ -5,6 +5,8 @@ import { Image } from "expo-image";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { getCategoryIcon, serverUrl } from "@/components/constants";
 import MaterialBox from "@/components/course/MaterialBox";
+import NotFound from "@/components/common/NotFound";
+import Header from "@/components/common/Header";
 
 
 
@@ -41,14 +43,7 @@ export default function Details() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerLeftContainer}>
-                    <TouchableOpacity onPress={() => { router.back() }}>
-                        <FontAwesome6 name="arrow-left" style={styles.headerBackIcon} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Course</Text>
-                </View>
-            </View>
+            <Header title="Course Details" />
             <ScrollView style={styles.contentContainer}>
                 <View style={styles.gap} />
                 {
@@ -121,7 +116,7 @@ export default function Details() {
                         : <></>
                 }
                 <View style={styles.contentBox}>
-                    <Text style={styles.materialTitle}>Course Contents</Text>
+                    <Text style={styles.sectionTitle}>Course Contents</Text>
                     <View style={styles.divider} />
                     {
                         (course && materials) ?
@@ -129,10 +124,7 @@ export default function Details() {
                                 materials.map(function (material) {
                                     return <MaterialBox key={material.id} material={material} isEnrolled={course.is_enrolled} />
                                 }) :
-                                <View style={styles.notFound}>
-                                    <FontAwesome6 name="file" style={styles.notFoundIcon} solid />
-                                    <Text style={styles.notFoundTitle}>No Materials</Text>
-                                </View>
+                                <NotFound title="No Materials" icon="file"/>
                             : <></>
                     }
                 </View>
@@ -159,32 +151,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#EEEEEE"
-    },
-    header: {
-        paddingHorizontal: 18,
-        paddingVertical: 14,
-        backgroundColor: "#FFFFFF",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        borderBottomColor: "rgba(0, 0, 0, 0.1)",
-        borderBottomWidth: 1,
-        // elevation: 6,
-    },
-    headerLeftContainer: {
-        flexDirection: "row",
-        alignItems: "center"
-    },
-    headerBackIcon: {
-        fontSize: 20,
-        margin: 4,
-        marginRight: 16
-    },
-    headerTitle: {
-        fontSize: 22,
-        fontWeight: "600",
-        color: "rgba(0, 0, 0, 0.8)",
-        margin: 4
     },
     contentContainer: {
         paddingHorizontal: 8
@@ -255,17 +221,19 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
         textAlign: 'justify',
         marginTop: 12,
+        marginBottom: 8,
         color: "rgba(0,0,0,0.6)"
     },
     instructorContainer: {
         flexDirection: "row",
         alignItems: "center",
         marginHorizontal: 8,
+        marginVertical: 4
     },
     instructorSemiTitle: {
         color: "#FF6600",
         fontSize: 12,
-        fontWeight: "bold"
+        fontWeight: 600
     },
     instructorTitle: {
         fontSize: 14,
@@ -295,17 +263,24 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'rgba(0,0,0,0.6)'
     },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        margin: 8,
+        color: "rgba(0,0,0,0.8)"
+    },
     divider: {
         borderBottomColor: "rgba(0,0,0,0.1)",
         borderBottomWidth: 1,
-        marginVertical: 12,
+        marginVertical: 8,
         width: "95%",
         marginHorizontal: 'auto'
     },
     detailsContainer: {
         flexDirection: "row",
         marginHorizontal: 8,
-        marginBottom: 8,
+        marginTop: 4,
+        marginBottom: 6,
         alignItems: 'center'
     },
     detail: {
@@ -328,29 +303,6 @@ const styles = StyleSheet.create({
         height: 40,
         marginHorizontal: 'auto'
     },
-    materialTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginHorizontal: 8,
-        marginVertical: 8,
-        marginBottom: 4,
-        color: "rgba(0,0,0,0.8)"
-    },
-    notFound: {
-        height: 200,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    notFoundIcon: {
-        fontSize: 80,
-        color: 'rgba(0,0,0,0.6)'
-    },
-    notFoundTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'rgba(0,0,0,0.6)',
-        marginTop: 10
-    },
     enrollContainer: {
         backgroundColor: "#FFFFFF",
         borderTopWidth: 1,
@@ -360,7 +312,8 @@ const styles = StyleSheet.create({
         padding: 6
     },
     coursePrice: {
-        marginHorizontal: 14,
+        marginHorizontal: 12,
+        marginRight: 24,
     },
     coursePriceSemiTitle: {
         color: 'rgba(0,0,0,0.6)'
@@ -377,7 +330,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         marginVertical: 10,
-        marginHorizontal: 14,
+        marginHorizontal: 12,
         flexDirection: 'row',
         justifyContent: 'center'
     },

@@ -1,5 +1,5 @@
-// const serverUrl = 'http://192.168.10.100:8000';
-const serverUrl = 'http://10.15.53.51:8000';
+const serverUrl = 'http://192.168.10.100:8000';
+// const serverUrl = 'http://10.15.53.51:8000';
 // const serverUrl = 'http://10.15.29.132:8000';
 
 const categories = [

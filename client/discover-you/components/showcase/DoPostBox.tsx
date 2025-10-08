@@ -21,6 +21,7 @@ function DoPostBox({ setUpdatePosts }: any) {
         }[]
     });
     const [showDropdown, setShowDropdown] = useState(false);
+    const [isReady, setIsReady] = useState(true);
 
     // Pick image
     async function pickImage() {
@@ -93,8 +94,8 @@ function DoPostBox({ setUpdatePosts }: any) {
                 if (data.success) {
                     ToastAndroid.show(("Successfully Posted!"), ToastAndroid.SHORT);
 
-                    setUpdatePosts((old:any) => old+1);
-                    
+                    setUpdatePosts((old: any) => old + 1);
+
                     setFormData({
                         content: "",
                         category: "Web Development",
@@ -139,41 +140,43 @@ function DoPostBox({ setUpdatePosts }: any) {
                 />
             </View>
 
-
-            <ScrollView
-                style={styles.mediaContainer}
-                horizontal
-            >
-                {formData.media.map((file, index) => {
-                    return (
-                        <View key={index} style={styles.mediaBox}>
-                            <TouchableOpacity
-                                style={styles.mediaDelete}
-                                onPress={() => {
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        media: prev.media.filter((_, i) => i !== index)
-                                    }));
-                                }}
-                            >
-                                <FontAwesome6 name="xmark" style={styles.mediaDeleteIcon} solid />
-                            </TouchableOpacity>
-                            {file.type === "image" ? (
-                                <Image
-                                    source={{ uri: file.uri }}
-                                    style={styles.mediaImage}
-                                    contentFit="cover"
-                                />
-                            ) : (
-                                <>
-                                    <FontAwesome6 name="video" style={styles.mediaVideoIcon} solid />
-                                    <Text style={styles.mediaVideoText}>{formatDuration(file.duration)}</Text>
-                                </>
-                            )}
-                        </View>
-                    )
-                })}
-            </ScrollView>
+            {
+                formData.media.length > 0 &&
+                <ScrollView
+                    style={styles.mediaContainer}
+                    horizontal
+                >
+                    {formData.media.map((file, index) => {
+                        return (
+                            <View key={index} style={styles.mediaBox}>
+                                <TouchableOpacity
+                                    style={styles.mediaDelete}
+                                    onPress={() => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            media: prev.media.filter((_, i) => i !== index)
+                                        }));
+                                    }}
+                                >
+                                    <FontAwesome6 name="xmark" style={styles.mediaDeleteIcon} solid />
+                                </TouchableOpacity>
+                                {file.type === "image" ? (
+                                    <Image
+                                        source={{ uri: file.uri }}
+                                        style={styles.mediaImage}
+                                        contentFit="cover"
+                                    />
+                                ) : (
+                                    <>
+                                        <FontAwesome6 name="video" style={styles.mediaVideoIcon} solid />
+                                        <Text style={styles.mediaVideoText}>{formatDuration(file.duration)}</Text>
+                                    </>
+                                )}
+                            </View>
+                        )
+                    })}
+                </ScrollView>
+            }
 
             <View style={styles.buttonContainer}>
                 <View style={styles.category} >
@@ -214,8 +217,13 @@ function DoPostBox({ setUpdatePosts }: any) {
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity style={styles.postButton} onPress={handleSubmit}>
-                <Text style={styles.postButtonText}>Post</Text>
+            <TouchableOpacity style={isReady ? styles.postButton : [styles.postButton, {opacity: 0.6}]} onPress={handleSubmit} disabled={!isReady}>
+                {
+                    isReady ?
+                    <Text style={styles.postButtonText}>Post</Text>
+                    :
+                    <Text style={styles.postButtonText}>Posting...</Text>
+                }
             </TouchableOpacity>
         </View>
     )
@@ -232,23 +240,23 @@ const styles = StyleSheet.create({
     },
     textInput: {
         marginHorizontal: 2,
-        flex: 1
+        flex: 1,
+        marginLeft: 4
     },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        alignContent: "center"
+        alignContent: "center",
     },
     iconButtonContainer: {
         flexDirection: "row",
-        paddingHorizontal: 8,
-        paddingVertical: 6
+        paddingHorizontal: 6
     },
     iconButton: {
         width: 34,
         height: 34,
-        margin: 4,
+        marginHorizontal: 4,
         borderRadius: 8,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.1)",
@@ -263,8 +271,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 8,
         alignItems: 'center',
-        margin: 12,
-        marginTop: 0,
+        margin: 10,
         flexDirection: 'row',
         justifyContent: 'center'
     },
@@ -279,7 +286,7 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         borderRadius: 8,
         maxWidth: '100%',
-        marginHorizontal: 12,
+        marginHorizontal: 10,
         borderColor: "rgba(255, 102, 0, 0.4)",
         borderWidth: 1,
         position: "relative"
@@ -359,16 +366,15 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         padding: 8,
-        marginTop: 8,
-        paddingBottom: 4
+        paddingBottom: 6
     },
     profilePicture: {
         width: 40,
         height: 40,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-        marginHorizontal: 6,
+        borderColor: "rgba(0,0,0,0.4)",
+        margin: 4,
     },
     pseudoProfilePicture: {
         width: 40,
@@ -379,16 +385,17 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.2)",
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal: 6
+        margin: 4,
     },
     pseudoProfilePictureText: {
         fontSize: 18,
         color: 'rgba(0,0,0,0.6)'
     },
     mediaContainer: {
-        marginHorizontal: 10,
-        marginTop: 10,
-        marginBottom: 2
+        paddingHorizontal: 8,
+        paddingBottom: 6,
+        marginBottom: 2,
+        marginTop: 2
     },
     mediaBox: {
         width: 100,
@@ -412,8 +419,8 @@ const styles = StyleSheet.create({
         width: 20,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-        backgroundColor: "rgba(0,0,0,0.2)",
+        borderColor: "rgba(0,0,0,0.4)",
+        backgroundColor: "rgba(255,255,255,0.8)",
         justifyContent: 'center',
         alignItems: 'center'
     },

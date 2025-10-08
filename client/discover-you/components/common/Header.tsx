@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#EEEEEE"
     },
     header: {
-        paddingHorizontal: 18,
-        paddingVertical: 14,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         backgroundColor: "#FFFFFF",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -38,12 +38,12 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     headerBackIcon: {
-        fontSize: 20,
+        fontSize: 18,
         margin: 4,
         marginRight: 16
     },
     headerTitle: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: "600",
         color: "rgba(0, 0, 0, 0.8)",
         margin: 4

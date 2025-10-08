@@ -144,7 +144,9 @@ function PostBox({ post }: any) {
                     }
                 </TouchableOpacity>
                 <View style={styles.buttonDivider} />
-                <TouchableOpacity style={styles.actionButton}>
+                <TouchableOpacity style={styles.actionButton}
+                    onPress={() => router.push({ pathname: "/(showcase)/post", params: { postId: post.id } })}
+                >
                     <FontAwesome6 style={styles.actionButtonIcon} name="comment" solid />
                     <Text style={styles.actionButtonText}>Comment</Text>
                 </TouchableOpacity>
@@ -156,7 +158,7 @@ function PostBox({ post }: any) {
 const styles = StyleSheet.create({
     postBox: {
         backgroundColor: "#FFFFFF",
-        borderRadius: 14,
+        borderRadius: 12,
         margin: 6,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.1)",
@@ -167,15 +169,15 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-        marginRight: 8
+        borderColor: "rgba(0,0,0,0.4)",
+        marginRight: 10
     },
     pseudoProfilePicture: {
         width: 40,
         height: 40,
         borderRadius: 20,
         backgroundColor: 'rgba(0,0,0,0.2)',
-        marginRight: 8,
+        marginRight: 10,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
         alignItems: 'center',
@@ -188,26 +190,26 @@ const styles = StyleSheet.create({
     creatorContainer: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 6,
-        marginTop: 2,
+        padding: 4
     },
     postTime: {
         color: 'rgba(0,0,0,0.6)',
         fontSize: 12,
-        marginTop: 2
+        marginTop: 1
     },
     creatorTitle: {
-        fontSize: 14,
+        fontSize: 15,
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
     },
     postContent: {
-        padding: 6
+        padding: 6,
+        fontSize: 15
     },
     mediaContainer: {
         backgroundColor: 'rgba(0,0,0,0.1)',
         height: 300,
-        margin: 6,
+        margin: 4,
         borderRadius: 8,
         overflow: "hidden",
     },
@@ -232,7 +234,7 @@ const styles = StyleSheet.create({
         // backgroundColor: "rgba(255, 102, 0, 0.2)",
         borderRadius: 8,
         margin: 2,
-        padding: 3
+        padding: 2
     },
     actionButtonText: {
         fontSize: 14,
@@ -241,7 +243,8 @@ const styles = StyleSheet.create({
         fontWeight: 500
     },
     actionButtonIcon: {
-        color: 'rgba(0,0,0,0.6)'
+        color: 'rgba(0,0,0,0.6)',
+        fontSize: 15
     },
     actionButtonTextActive: {
         fontSize: 14,
@@ -256,7 +259,7 @@ const styles = StyleSheet.create({
         borderBottomColor: "rgba(0,0,0,0.1)",
         borderBottomWidth: 1,
         marginBottom: 6,
-        width: "95%",
+        width: "97%",
         marginHorizontal: 'auto'
     },
     buttonDivider: {
@@ -290,8 +293,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginHorizontal: 8,
-        marginBottom: 10,
+        marginHorizontal: 6,
+        marginBottom: 8,
         marginTop: 4
     },
     details: {
