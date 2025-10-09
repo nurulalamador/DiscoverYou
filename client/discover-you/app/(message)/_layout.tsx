@@ -4,6 +4,7 @@ export default function CourseLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="messages" />
+      <Stack.Screen name="inbox" />
     </Stack>
   );
 }

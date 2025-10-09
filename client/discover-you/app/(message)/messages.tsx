@@ -8,6 +8,7 @@ import MaterialBox from "@/components/course/MaterialBox";
 import CourseBox from "@/components/course/CourseBox";
 import Header from "@/components/common/Header";
 import useAuth from "../authContext";
+import Inbox from "@/components/messaging/Inbox";
 
 
 export default function Messages() {
@@ -19,16 +20,18 @@ export default function Messages() {
         <View style={styles.container}>
             <Header title="Messages" />
             <View style={styles.subTabContainer}>
-                <TouchableOpacity style={activeSubTab == 'inbox' ? styles.activeSubTab : styles.subTab} onPress={() => setActiveSubTab('inbox')}>
+                <TouchableOpacity style={styles.subTab} onPress={() => setActiveSubTab('inbox')}>
                     <Text style={activeSubTab == 'inbox' ? styles.activeSubTabText : styles.subTabText}>Inbox</Text>
+                    {activeSubTab == 'inbox' ? <View style={styles.subTabIndicator} /> : null}
                 </TouchableOpacity>
-                <TouchableOpacity style={activeSubTab == 'communities' ? styles.activeSubTab : styles.subTab} onPress={() => setActiveSubTab('communities')}>
+                <TouchableOpacity style={styles.subTab} onPress={() => setActiveSubTab('communities')}>
                     <Text style={activeSubTab == 'communities' ? styles.activeSubTabText : styles.subTabText}>Communities</Text>
+                    {activeSubTab == 'communities' ? <View style={styles.subTabIndicator} /> : null}
                 </TouchableOpacity>
             </View>
-            <ScrollView>
-                
-            </ScrollView>
+            <View style={styles.gap} />
+            {activeSubTab == 'inbox' ? <Inbox /> : null}
+            <View style={styles.gap} />
         </View>
     );
 }
@@ -39,36 +42,40 @@ const styles = StyleSheet.create({
         backgroundColor: "#EEEEEE"
     },
     subTabContainer: {  
+        backgroundColor: "#FFFFFF",
+        borderBottomColor: "rgba(0,0,0,0.1)",
+        borderBottomWidth: 1,
         flexDirection: 'row',
-        margin: 10
+        paddingHorizontal: 8,
+        marginTop: -6
     },
     subTab: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.1)',
         padding: 8,
         borderRadius: 8,
-        margin: 4,
-    },
-    activeSubTab: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 102, 0, 0.2)',
-        padding: 8,
-        borderRadius: 8,
-        margin: 4,
-        borderWidth: 1,
-        borderColor: '#FF6600'
+        position: 'relative',
     },
     subTabText: {
         fontSize: 14,
-        color: 'rgba(0,0,0,0.6)'
+        color: 'rgba(0,0,0,0.6)',
+        padding: 6
     },
     activeSubTabText: {
         fontSize: 15,
         color: '#FF6600',
-        fontWeight: 'bold'
-    }
+        fontWeight: 'bold',
+        padding: 6
+    },
+    subTabIndicator: {
+        position: 'absolute',
+        bottom: 0,
+        height: 4,
+        width: '80%',
+        backgroundColor: '#FF6600',
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4
+    },
         
     // formContainer: {
     //     backgroundColor: "#FFFFFF",
@@ -133,9 +140,9 @@ const styles = StyleSheet.create({
     // errorMessageText: {
     //     color: 'rgba(220,0,0,1)'
     // },
-    // gap: {
-    //     height: 8
-    // },
+    gap: {
+        height: 8
+    },
     // title: {
     //     fontSize: 20,
     //     fontWeight: '600',
