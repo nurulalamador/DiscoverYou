@@ -47,7 +47,6 @@ exports.login = async (req, res) => {
             [email, email],
             async (err, results) => {
                 if (err) {
-                    throw err;
                     return res.status(500).json({
                         success: false,
                         message: "Cannot connect to database 2.",
