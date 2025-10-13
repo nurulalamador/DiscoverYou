@@ -14,7 +14,7 @@ import Inbox from "@/components/messaging/Inbox";
 export default function Messages() {
     const [activeSubTab, setActiveSubTab] = useState<'inbox' | 'communities'>('inbox');
 
-    const {user} = useAuth();
+    const { user } = useAuth();
 
     return (
         <View style={styles.container}>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#EEEEEE"
     },
-    subTabContainer: {  
+    subTabContainer: {
         backgroundColor: "#FFFFFF",
         borderBottomColor: "rgba(0,0,0,0.1)",
         borderBottomWidth: 1,
@@ -57,14 +57,15 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     subTabText: {
-        fontSize: 14,
+        fontSize: 15,
         color: 'rgba(0,0,0,0.6)',
-        padding: 6
+        padding: 6,
+        fontWeight: 500
     },
     activeSubTabText: {
         fontSize: 15,
         color: '#FF6600',
-        fontWeight: 'bold',
+        fontWeight: 800,
         padding: 6
     },
     subTabIndicator: {
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 4,
         borderTopRightRadius: 4
     },
-        
+
     // formContainer: {
     //     backgroundColor: "#FFFFFF",
     //     borderRadius: 14,

@@ -6,12 +6,14 @@ exports.index = async (req, res) => {
     const userId = req.userId;
 
     connection.query(
-        `SELECT u.id, u.full_name, u.email, u.username, u.gender, u.date_of_birth, mobile_no,
+        `SELECT u.id, u.full_name, u.email, u.username, u.gender, u.date_of_birth, u.mobile_no, u.points,
             CASE 
                 WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
                 ELSE NULL
-            END AS profile_picture_url
+            END AS profile_picture_url,
+            GROUP_CONCAT(ui.interest) AS interests
         FROM users AS u
+        LEFT JOIN user_interests ui ON ui.user_id = u.id
         WHERE u.id = ?`,
         [userId],
         function (err, results) {
@@ -23,10 +25,15 @@ exports.index = async (req, res) => {
                 });
             }
 
+            const userData = results[0];
+            userData.interests = userData.interests
+                ? userData.interests.split(',')
+                : [];
+
             res.status(200).json({
                 isAuthenticate: true,
                 message: "User is authenticated.",
-                user: results[0]
+                user: userData
             });
         }
     );
@@ -38,15 +45,21 @@ exports.login = async (req, res) => {
 
         // Find user by email
         connection.query(
-            `SELECT  u.id, u.full_name, u.email, u.username, u.gender, u.date_of_birth, u.mobile_no, u.password,
+            `SELECT u.id, u.full_name, u.email, u.username, u.gender, u.date_of_birth, u.mobile_no, u.password, u.points,
                 CASE 
                     WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
                     ELSE NULL
-                END AS profile_picture_url 
-            FROM users u WHERE email = ? OR username = ?`,
+                END AS profile_picture_url,
+                GROUP_CONCAT(ui.interest) AS interests
+            FROM users AS u
+            JOIN user_interests AS ui 
+            ON ui.user_id = u.id
+            WHERE u.email = ? OR u.username = ?
+            GROUP BY u.id;`,
             [email, email],
             async (err, results) => {
                 if (err) {
+                    // throw err;
                     return res.status(500).json({
                         success: false,
                         message: "Cannot connect to database 2.",
@@ -104,7 +117,8 @@ exports.login = async (req, res) => {
                             profile_picture_url: user.profile_picture_url,
                             gender: user.gender,
                             date_of_birth: user.date_of_birth,
-                            mobile_no: user.mobile_no
+                            mobile_no: user.mobile_no,
+                            interests: user.interests ? user.interests.split(',') : []
                         }
                     });
                 });

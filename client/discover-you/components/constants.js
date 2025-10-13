@@ -1,19 +1,20 @@
 const serverUrl = 'http://192.168.10.100:8000';
-// const serverUrl = 'http://10.15.53.51:8000';
+// const serverUrl = 'http://10.15.56.41:8000';
 // const serverUrl = 'http://10.15.29.132:8000';
 
 const categories = [
     "Music and Singing",
+    "Robotics",
+    "Literature",
     "Graphics Designing",
     "Web Development",
-    "Literature",
-    "Competitive Programming",
     "Dancing",
+    "Competitive Programming",
+    "Gaming",
     "App Development",
     "Arts and Crafts",
-    "Gaming",
-    "Robotics",
-    "Debating"
+    "Debating",
+    "Cooking"
 ];
 
 function timeAgo(isoDate) {
@@ -59,11 +60,11 @@ function getCategoryIcon(category) {
         case "Literature": 
             return "pen-to-square"; break;
         case "Competitive Programming": 
-            return "code"; break;
+            return "terminal"; break;
         case "Dancing": 
             return "person-walking"; break;
         case "App Development": 
-            return "code"; break;
+            return "mobile-screen-button"; break;
         case "Arts and Crafts": 
             return "palette"; break;
         case "Gaming": 
@@ -72,6 +73,8 @@ function getCategoryIcon(category) {
             return "users-line"; break;
         case "Robotics": 
             return "robot"; break;
+        case "Cooking": 
+            return "utensils"; break;
         default: 
             return "star"; break;
     }

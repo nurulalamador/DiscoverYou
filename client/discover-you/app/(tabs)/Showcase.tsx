@@ -1,3 +1,4 @@
+import FilterBox from "@/components/common/FilterBox";
 import DoPostBox from "@/components/showcase/DoPostBox";
 import ForYouPosts from "@/components/showcase/ForYouPosts";
 import { useState } from "react";
@@ -10,7 +11,7 @@ export default function Showcase() {
     <ScrollView>
       <View style={styles.gap}></View>
       <DoPostBox setUpdatePosts={setUpdatePosts}/>
-      <View style={styles.gap}></View>
+      <FilterBox sort={["Newest First", "Most Liked"]}/>
       <ForYouPosts updatePosts={updatePosts}/>
       <View style={styles.gap}></View>
     </ScrollView>

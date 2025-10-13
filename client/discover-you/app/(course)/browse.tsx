@@ -7,6 +7,7 @@ import { getCategoryIcon, serverUrl } from "@/components/constants";
 import MaterialBox from "@/components/course/MaterialBox";
 import CourseBox from "@/components/course/CourseBox";
 import Header from "@/components/common/Header";
+import FilterBox from "@/components/common/FilterBox";
 
 type Course = {
     id: number,
@@ -44,8 +45,10 @@ export default function Browse() {
     return (
         <View style={styles.container}>
             <Header title="Browse Courses" />
+
+            <View style={styles.gap} />
+            <FilterBox sort={["Newest First", "Lowest Price"]} />
             <ScrollView style={styles.contentContainer}>
-                <View style={styles.gap} />
                 {
                     courses ?
                         courses.map(function (course) {

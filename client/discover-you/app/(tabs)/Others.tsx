@@ -52,7 +52,10 @@ export default function Others() {
           <Text style={styles.profileName}>{user.full_name}</Text>
           <Text style={styles.profileUsername}>@{user.username}</Text>
           <TouchableOpacity style={styles.viewProfileButton} 
-            onPress={() => router.push("/(other)/profile")}
+            onPress={() => router.push({
+              pathname: "/(other)/profile",
+              params: {personId: user.id}
+            })}
           >
             <Text style={styles.viewProfileButtonText}>View Profile</Text>
             <FontAwesome6 name="chevron-right" style={styles.viewProfileButtonIcon} />
@@ -143,8 +146,8 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 2,
-    borderColor: "rgba(0,0,0,0.2)",
-    margin: 16
+    borderColor: "rgba(0,0,0,0.4)",
+    margin: 14
   },
   pseudoProfilePicture: {
     width: 80,
@@ -176,7 +179,7 @@ const styles = StyleSheet.create({
   viewProfileButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6
+    marginTop: 8
   },
   viewProfileButtonText: {
     fontSize: 14,

@@ -2,7 +2,7 @@ import { serverUrl } from "@/components/constants";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Inbox() {
@@ -13,10 +13,12 @@ export default function Inbox() {
     const [loading, setLoading] = useState<boolean>(true);
     const [updateFlag, setUpdateFlag] = useState(0);
 
+    const scrollViewRef = useRef<ScrollView>(null);
+
     const router = useRouter();
 
     useEffect(() => {
-        let intervalId : any;
+        let intervalId: any;
 
         function loadMessages() {
             fetch(`${serverUrl}/messaging/inbox/${personId}`, {
@@ -28,6 +30,9 @@ export default function Inbox() {
                     setMessages(data.messages);
                     setPerson(data.person);
                     setLoading(false);
+                    if (scrollViewRef.current) {
+                        scrollViewRef.current.scrollToEnd({ animated: true });
+                    }
                 })
                 .catch(function (err) {
                     console.log("Messages data fetching failed:", err);
@@ -113,6 +118,7 @@ export default function Inbox() {
                 </View>
             </View>
             <ScrollView
+                ref={scrollViewRef}
                 contentContainerStyle={styles.messageContainer}
             >
                 {
@@ -131,11 +137,11 @@ export default function Inbox() {
                         }
                         <Text style={styles.personBigName}>{person.full_name}</Text>
                         <TouchableOpacity style={styles.viewProfileButton}
-                            onPress={() => { 
-                                router.push({ 
+                            onPress={() => {
+                                router.push({
                                     pathname: "/(other)/profile",
-                                    params: { userId: personId }
-                                }) 
+                                    params: { personId: personId }
+                                })
                             }}
                         >
                             <Text style={styles.viewProfileText}>View Profile</Text>

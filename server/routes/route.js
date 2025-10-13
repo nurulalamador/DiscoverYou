@@ -6,11 +6,13 @@ const courseRoutes = require("./course.route");
 const profileRoutes = require("./profile.route");
 const showcaseRoutes = require("./showcase.route");
 const messagingRoutes = require("./messaging.route");
+const hiringRoutes = require("./hiring.route");
 
 router.use("/auth", authRoutes);
 router.use("/course", courseRoutes);
 router.use("/profile", profileRoutes);
 router.use("/showcase", showcaseRoutes);
 router.use("/messaging", messagingRoutes);
+router.use("/hiring", hiringRoutes);
 
 module.exports = router;
