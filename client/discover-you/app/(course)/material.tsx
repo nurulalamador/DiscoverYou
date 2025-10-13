@@ -7,10 +7,14 @@ import { getCategoryIcon, serverUrl } from "@/components/constants";
 import { useVideoPlayer, VideoView } from "expo-video";
 import InsideMaterialBox from "@/components/course/InsideMaterialBox";
 import Header from "@/components/common/Header";
+import NotFound from "@/components/common/NotFound";
+import useAuth from "../authContext";
+import Loading from "@/components/common/Loading";
 
 
 export default function Material() {
     const { courseId, materialId } = useLocalSearchParams();
+    const { user, setUpdateCourseTab } = useAuth();
     const [course, setCourse] = useState<any>();
     const [materials, setMaterials] = useState<any[]>([]);
     const [material, setMaterial] = useState<any>();
@@ -18,20 +22,21 @@ export default function Material() {
 
     const router = useRouter();
 
-    const [videoSource, setVideoSource] = useState(`${serverUrl}/course/material/${materialId}`);
-    // console.log(videoSource);
+    const [videoSource, setVideoSource] = useState(`${serverUrl}/course/material/${courseId}/${materialId}/${user.id}`);
+    console.log(videoSource);
 
     const player = useVideoPlayer(videoSource, (player) => {
         player.loop = true; // Loop the video
         player.play(); // Autoplay the video
     });
 
-    function changeMaterial(materialId : any) {
+    function changeMaterial(materialId: any) {
         setMaterial(materials.filter(function (material: any) { return material.id == materialId })[0]);
-        setVideoSource(`${serverUrl}/course/material/${materialId}`)
+        setVideoSource(`${serverUrl}/course/material/${courseId}/${materialId}/${user.id}`)
     }
 
     useEffect(() => {
+        console.log("hrll");
         function loadData() {
             fetch(`${serverUrl}/course/single/${courseId}`, {
                 method: "GET",
@@ -39,9 +44,10 @@ export default function Material() {
             })
                 .then(res => res.json())
                 .then(data => {
-                    setCourse(data.course[0]);
+                    setCourse(data.course);
                     setMaterials(data.materials);
                     setMaterial(data.materials.filter(function (material: any) { return material.id == materialId })[0]);
+                    setUpdateCourseTab((old:any)=>old+1);
                 })
                 .catch(function (err) {
                     console.log("Course data fetching failed:", err);
@@ -52,6 +58,10 @@ export default function Material() {
         }
         loadData();
     }, []);
+
+    if(loading) {
+        return <Loading/>
+    }
 
     return (
         <View style={styles.container}>
@@ -84,18 +94,15 @@ export default function Material() {
                     : <></>
                 }
                 <View style={styles.contentBox}>
-                    <Text style={styles.materialTitle}>Course Contents</Text>
+                    <Text style={styles.sectionTitle}>Course Contentos</Text>
                     <View style={styles.divider} />
                     {
                         (course && materials) ?
                             materials.length ?
                                 materials.map(function (materialProp) {
-                                    return <InsideMaterialBox key={materialProp.id} material={materialProp} isEnrolled={course.is_enrolled} isActive={material.id == materialProp.id} onPressFunction={()=>{changeMaterial(materialProp.id)}}/>
+                                    return <InsideMaterialBox key={materialProp.id} material={materialProp} isEnrolled={course.is_enrolled} isActive={material.id == materialProp.id} onPressFunction={() => { changeMaterial(materialProp.id) }} />
                                 }) :
-                                <View style={styles.notFound}>
-                                    <FontAwesome6 name="file" style={styles.notFoundIcon} solid />
-                                    <Text style={styles.notFoundTitle}>No Materials</Text>
-                                </View>
+                                <NotFound title="No Materials" icon="file" />
                             : <></>
                     }
                 </View>
@@ -125,39 +132,21 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         padding: 8
     },
-    previewImage: {
-        width: '100%',
-        height: 240,
-        borderRadius: 8,
-        resizeMode: "cover",
-        borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-    },
-    pseudoPreviewImage: {
-        width: '100%',
-        height: 240,
-        borderRadius: 8,
-        resizeMode: "cover",
-        borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-        backgroundColor: "rgba(0,0,0,0.1)",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    pseudoPreviewImageIcon: {
-        fontSize: 100,
-        color: 'rgba(0,0,0,0.4)'
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        margin: 8,
+        color: "rgba(0,0,0,0.8)"
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
         marginHorizontal: 8,
-        marginVertical: 2,
+        marginVertical: 6,
         color: "rgba(0,0,0,0.8)"
     },
     semiTitle: {
         marginHorizontal: 8,
-        marginVertical: 2,
         color: "rgba(0,0,0,0.6)",
         fontSize: 14
     },
@@ -173,8 +162,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         maxWidth: '100%',
         margin: 8,
-        marginTop: 12,
-        marginBottom: 6
+        marginTop: 12
     },
     categoryText: {
         color: "rgba(0,0,0,0.5)",
@@ -185,142 +173,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "rgba(0,0,0,0.5)"
     },
-    description: {
-        fontSize: 13,
-        marginHorizontal: 8,
-        textAlign: 'justify',
-        marginTop: 12,
-        color: "rgba(0,0,0,0.6)"
-    },
-    instructorContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginHorizontal: 8,
-    },
-    instructorSemiTitle: {
-        color: "#FF6600",
-        fontSize: 12,
-        fontWeight: "bold"
-    },
-    instructorTitle: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: 'rgba(0,0,0,0.6)'
-    },
-    profilePicture: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        resizeMode: "contain",
-        borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-        marginRight: 12
-    },
-    pseudoProfilePicture: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        marginRight: 12,
-        borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    pseudoProfilePictureText: {
-        fontSize: 18,
-        color: 'rgba(0,0,0,0.6)'
-    },
     divider: {
         borderBottomColor: "rgba(0,0,0,0.1)",
         borderBottomWidth: 1,
-        marginVertical: 12,
+        marginVertical: 8,
         width: "95%",
         marginHorizontal: 'auto'
-    },
-    detailsContainer: {
-        flexDirection: "row",
-        marginHorizontal: 8,
-        marginBottom: 8,
-        alignItems: 'center'
-    },
-    detail: {
-        flex: 1,
-        alignItems: 'center'
-    },
-    detailTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        margin: 2,
-        color: 'rgba(0,0,0,0.8)'
-    },
-    detailSemiTitle: {
-        fontSize: 12,
-        color: 'rgba(0,0,0,0.6)'
-    },
-    detailDivider: {
-        borderLeftColor: "rgba(0,0,0,0.1)",
-        borderLeftWidth: 1,
-        height: 40,
-        marginHorizontal: 'auto'
-    },
-    materialTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginHorizontal: 8,
-        marginVertical: 8,
-        marginBottom: 4,
-        color: "rgba(0,0,0,0.8)"
-    },
-    notFound: {
-        height: 200,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    notFoundIcon: {
-        fontSize: 80,
-        color: 'rgba(0,0,0,0.6)'
-    },
-    notFoundTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'rgba(0,0,0,0.6)',
-        marginTop: 10
-    },
-    enrollContainer: {
-        backgroundColor: "#FFFFFF",
-        borderTopWidth: 1,
-        borderTopColor: "rgba(0, 0, 0, 0.1)",
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 6
-    },
-    coursePrice: {
-        marginHorizontal: 14,
-    },
-    coursePriceSemiTitle: {
-        color: 'rgba(0,0,0,0.6)'
-    },
-    coursePriceTitle: {
-        color: '#FF6600',
-        fontWeight: "bold",
-        fontSize: 20
-    },
-    enrolledButton: {
-        flex: 1,
-        backgroundColor: '#FF6600',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginVertical: 10,
-        marginHorizontal: 14,
-        flexDirection: 'row',
-        justifyContent: 'center'
-    },
-    enrolledButtonText: {
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        fontSize: 15,
     },
     videoBox: {
         margin: 6,
@@ -337,7 +195,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     videoDetails: {
-        padding: 10,
-        paddingVertical: 12
+        padding: 8
     }
 });

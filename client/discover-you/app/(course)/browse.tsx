@@ -8,6 +8,7 @@ import MaterialBox from "@/components/course/MaterialBox";
 import CourseBox from "@/components/course/CourseBox";
 import Header from "@/components/common/Header";
 import FilterBox from "@/components/common/FilterBox";
+import Loading from "@/components/common/Loading";
 
 type Course = {
     id: number,
@@ -40,7 +41,9 @@ export default function Browse() {
         loadData();
     }, []);
 
-
+    if(loading) {
+        return <Loading/>
+    }
 
     return (
         <View style={styles.container}>

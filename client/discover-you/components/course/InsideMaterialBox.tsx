@@ -36,14 +36,16 @@ const styles = StyleSheet.create({
     materialBox: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 10
+        padding: 10,
+        margin: 2
     },
     materialBoxActive: {
         backgroundColor: "rgba(255, 102, 0, 0.2)",
         flexDirection: "row",
         alignItems: "center",
         padding: 10,
-        borderRadius: 8
+        borderRadius: 8,
+        margin: 2
     },
     materialIcon: {
         width: 40,

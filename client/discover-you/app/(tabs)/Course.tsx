@@ -1,10 +1,12 @@
 import { serverUrl } from "@/components/constants";
-import BrowseCourseBox from "@/components/course/BrowseCourseBox";
+import BrowseCourseBox from "@/components/course/ExploreCourseBox";
 import EnrolledCourseBox from "@/components/course/EnrolledCourseBox";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import useAuth from "../authContext";
+import Loading from "@/components/common/Loading";
 
 type Course = {
   id: number,
@@ -15,6 +17,8 @@ type Course = {
 
 export default function Course() {
   const router = useRouter();
+
+  const {updateCourseTab} = useAuth();
 
   const [exploreCourses, setExploreCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
@@ -39,7 +43,11 @@ export default function Course() {
         });
     }
     loadData();
-  }, []);
+  }, [updateCourseTab]);
+
+  if(loading) {
+    return <Loading/>
+  }
 
   return (
     <ScrollView>
@@ -105,7 +113,7 @@ const styles = StyleSheet.create({
   allButtonIcon: {
     color: '#FFFFFF',
     fontSize: 16,
-    marginLeft: 8
+    marginLeft: 10
   },
   divider: {
     borderBottomColor: "rgba(0,0,0,0.1)",

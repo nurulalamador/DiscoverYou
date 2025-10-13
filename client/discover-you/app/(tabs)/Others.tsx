@@ -4,6 +4,7 @@ import useAuth from "../authContext";
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
+import styles from "@/components/styles/SettingStyles";
 
 export default function Others() {
   const { user, setIsAuthenticated } = useAuth();
@@ -93,102 +94,3 @@ export default function Others() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  gap: {
-    height: 8
-  },
-  menuContainer: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    marginVertical: 6,
-    marginHorizontal: 14,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-    padding: 8
-  },
-  divider: {
-    borderBottomColor: "rgba(0,0,0,0.1)",
-    borderBottomWidth: 1,
-    marginVertical: 4,
-    width: "95%",
-    marginHorizontal: 'auto'
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-  },
-  menuItemIcon: {
-    fontSize: 18,
-    color: "rgba(0,0,0,0.6)",
-    width: 30,
-    textAlign: "center",
-    marginRight: 12
-  },
-  menuItemText: {
-    fontSize: 15,
-    color: "rgba(0,0,0,0.8)",
-    fontWeight: 500
-  },
-  profileSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 6,
-    marginHorizontal: 14,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-    borderRadius: 14
-  },
-  profilePicture: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 2,
-    borderColor: "rgba(0,0,0,0.4)",
-    margin: 14
-  },
-  pseudoProfilePicture: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    borderWidth: 2,
-    borderColor: "rgba(0,0,0,0.2)",
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 16
-  },
-  pseudoProfilePictureText: {
-    fontSize: 40,
-    color: 'rgba(0,0,0,0.6)'
-  },
-  profileDetails: {
-    flex: 1
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  profileUsername: {
-    fontSize: 14,
-    color: 'rgba(0,0,0,0.6)',
-    marginTop: 2
-  },
-  viewProfileButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8
-  },
-  viewProfileButtonText: {
-    fontSize: 14,
-    color: '#FF6600',
-    fontWeight: "600",
-  },
-  viewProfileButtonIcon: {
-    fontSize: 14,
-    color: '#FF6600',
-    marginLeft: 6
-  }
-});

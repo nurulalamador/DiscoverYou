@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.1)"
+        borderColor: "rgba(0,0,0,0.1)",
+        padding: 2
     },
     title: {
         fontSize: 16,
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
         margin: 8,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)"
+        borderColor: "rgba(0,0,0,0.4)"
     },
     pseudoPreviewImage: {
         width: 152,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.2)"
     },
     details: {
-        marginLeft: 4,
+        marginLeft: 6,
         marginRight: 12,
         flex: 1
     },
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
         height: 30,
         borderRadius: 15,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
+        borderColor: "rgba(0,0,0,0.4)",
         marginRight: 8
     },
     pseudoProfilePicture: {
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     instructorSemiTitle: {
         color: "#FF6600",
         fontSize: 11,
-        fontWeight: "bold"
+        fontWeight: 600
     },
     instructorTitle: {
         fontSize: 12,

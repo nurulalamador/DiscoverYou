@@ -1,3 +1,4 @@
+const e = require('express');
 const connection = require('../config/database'); // your MySQL connection
 
 exports.getCourseImage = (req, res) => {
@@ -35,13 +36,14 @@ exports.getCourseImage = (req, res) => {
 };
 
 exports.getMaterial = (req, res) => {
-    const materialId = req.params.id;
+    const { courseId, materialId, userId } = req.params;
 
     connection.query(
         'SELECT media_blob, media_type FROM course_materials WHERE id = ?',
         [materialId],
         function (err, results) {
             if (err) {
+                throw err;
                 return res.status(500).json({
                     success: false,
                     message: "Database error.",
@@ -56,14 +58,53 @@ exports.getMaterial = (req, res) => {
                 });
             }
 
-            // Assuming cover_image is stored as BLOB or binary
-            const material = results[0].media_blob;
+            // Check if entry exists in course_material_completed
+            connection.query(
+                'SELECT 1 FROM course_material_completed WHERE participant_id = ? AND material_id = ?',
+                [userId, materialId],
+                function (err, completedResults) {
+                    if (err) {
+                        return res.status(500).json({
+                            success: false,
+                            message: "Database error.",
+                            error: err
+                        });
+                    }
 
-            res.writeHead(200, {
-                'Content-Type': results[0].media_type, // adjust based on actual image type
-                'Content-Length': material.length
-            });
-            res.end(material);
+                    // If not completed, insert entry
+                    if (completedResults.length === 0) {
+                        connection.query(
+                            'INSERT INTO course_material_completed (participant_id, material_id, course_id) VALUES (?, ?, ?)',
+                            [userId, materialId, courseId],
+                            function (err) {
+                                if (err) {
+                                    console.log(err);
+                                    return res.status(500).json({
+                                        success: false,
+                                        message: "Database error.",
+                                        error: err
+                                    });
+                                }
+                                // Send media after marking as completed
+                                const material = results[0].media_blob;
+                                res.writeHead(200, {
+                                    'Content-Type': results[0].media_type,
+                                    'Content-Length': material.length
+                                });
+                                res.end(material);
+                            }
+                        );
+                    } else {
+                        // Already completed, just send media
+                        const material = results[0].media_blob;
+                        res.writeHead(200, {
+                            'Content-Type': results[0].media_type,
+                            'Content-Length': material.length
+                        });
+                        res.end(material);
+                    }
+                }
+            );
         }
     );
 };
@@ -72,7 +113,7 @@ exports.getAllCourses = (req, res) => {
     const userId = req.userId;
 
     connection.query(
-        `SELECT c.id, c.name, c.description, c.category, u.full_name AS instructor_name,
+        `SELECT c.id, c.name, c.description, c.category, c.instructor_id, u.full_name AS instructor_name,
                 CASE 
                     WHEN c.cover_image IS NOT NULL THEN CONCAT('/course/image/', c.id)
                     ELSE NULL
@@ -160,7 +201,7 @@ exports.getSingleCourse = (req, res) => {
     const userId = req.userId;
 
     connection.query(
-        `SELECT c.id, c.name, c.description, c.price, c.category, u.full_name AS instructor_name,
+        `SELECT c.id, c.name, c.description, c.price, c.category, c.instructor_id, u.full_name AS instructor_name,
             CASE 
                 WHEN c.cover_image IS NOT NULL THEN CONCAT('/course/image/', c.id)
                 ELSE NULL
@@ -229,8 +270,53 @@ exports.getSingleCourse = (req, res) => {
 
                     res.status(200).json({
                         success: true,
-                        course: courseResults,
+                        course: courseResults[0],
                         materials: materialResults
+                    });
+                }
+            );
+        }
+    );
+};
+
+exports.enrollInCourse = (req, res) => {
+    const userId = req.userId;
+    const courseId = req.body.courseId;
+
+    connection.query(
+        'SELECT 1 FROM course_participants WHERE participant_id = ? AND course_id = ?',
+        [userId, courseId],
+        function (err, results) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error.",
+                    error: err
+                });
+            }
+
+            if (results.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Already enrolled in this course."
+                });
+            }
+
+            connection.query(
+                'INSERT INTO course_participants (participant_id, course_id) VALUES (?, ?)',
+                [userId, courseId],
+                function (err) {
+                    if (err) {
+                        return res.status(500).json({
+                            success: false,
+                            message: "Database error.",
+                            error: err
+                        });
+                    }
+
+                    res.status(200).json({
+                        success: true,
+                        message: "Successfully enrolled in the course."
                     });
                 }
             );
