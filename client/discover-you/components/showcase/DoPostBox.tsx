@@ -9,8 +9,8 @@ import { useState } from "react";
 import useAuth from "@/app/authContext";
 import { useVideoPlayer, VideoPlayer, VideoView } from "expo-video";
 
-function DoPostBox({ setUpdatePosts }: any) {
-    const { user } = useAuth();
+function DoPostBox() {
+    const { user, setUpdateShowcaseTab } = useAuth();
     const [formData, setFormData] = useState({
         content: "",
         category: "Web Development",
@@ -94,7 +94,7 @@ function DoPostBox({ setUpdatePosts }: any) {
                 if (data.success) {
                     ToastAndroid.show(("Successfully Posted!"), ToastAndroid.SHORT);
 
-                    setUpdatePosts((old: any) => old + 1);
+                    setUpdateShowcaseTab((old: any) => old + 1);
 
                     setFormData({
                         content: "",
@@ -236,7 +236,8 @@ const styles = StyleSheet.create({
         margin: 6,
         marginHorizontal: 14,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.1)"
+        borderColor: "rgba(0,0,0,0.1)",
+        padding: 8
     },
     textInput: {
         marginHorizontal: 2,
@@ -248,10 +249,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         alignContent: "center",
+        marginVertical: 6
     },
     iconButtonContainer: {
         flexDirection: "row",
-        paddingHorizontal: 6
+        paddingHorizontal: 2
     },
     iconButton: {
         width: 34,
@@ -271,7 +273,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 8,
         alignItems: 'center',
-        margin: 10,
+        margin: 4,
         flexDirection: 'row',
         justifyContent: 'center'
     },
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         borderRadius: 8,
         maxWidth: '100%',
-        marginHorizontal: 10,
+        marginHorizontal: 4,
         borderColor: "rgba(255, 102, 0, 0.4)",
         borderWidth: 1,
         position: "relative"
@@ -364,9 +366,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         flexDirection: "row",
-        alignItems: "center",
-        padding: 8,
-        paddingBottom: 6
+        alignItems: "center"
     },
     profilePicture: {
         width: 40,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.4)",
-        margin: 4,
+        margin: 8,
     },
     pseudoProfilePicture: {
         width: 40,
@@ -385,17 +385,17 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.2)",
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 4,
+        margin: 8,
     },
     pseudoProfilePictureText: {
         fontSize: 18,
         color: 'rgba(0,0,0,0.6)'
     },
     mediaContainer: {
-        paddingHorizontal: 8,
-        paddingBottom: 6,
+        paddingHorizontal: 2,
+        paddingBottom: 4,
         marginBottom: 2,
-        marginTop: 2
+        marginTop: 8
     },
     mediaBox: {
         width: 100,

@@ -194,12 +194,44 @@ exports.getAllPosts = (req, res) => {
     );
 };
 
+exports.addComment = (req, res) => {
+    const userId = req.userId;
+    const { postId, content } = req.body;
+
+
+    if (!postId || !content) {
+        return res.status(400).json({
+            success: false,
+            message: "postId and comment are required."
+        });
+    }
+
+    connection.query(
+        'INSERT INTO showcase_post_comments (post_id, commenter_id, content) VALUES (?, ?, ?)',
+        [postId, userId, content],
+        function (err, results) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error while adding comment.",
+                    error: err
+                });
+            }
+
+            res.status(200).json({
+                success: true,
+                commentId: results.insertId
+            });
+        }
+    );
+};
+
 
 exports.getSinglePost = (req, res) => {
     const postId = req.params.id;
-
     const userId = req.userId;
 
+    // 1. Get the post and its media
     connection.query(
         `
         SELECT 
@@ -275,22 +307,54 @@ exports.getSinglePost = (req, res) => {
                 }));
             }
 
-            res.status(200).json({
-                success: true,
-                post: {
-                    id: post.id,
-                    content: post.content,
-                    category: post.category,
-                    creator_id: post.creator_id,
-                    creator_name: post.creator_name,
-                    created_at: post.created_at,
-                    total_reactions: post.total_reactions,
-                    total_comments: post.total_comments,
-                    is_reacted: post.is_reacted,
-                    creator_profile_picture_url: post.creator_profile_picture_url,
-                    media
+            // 2. Get comments for the post, including commenter info
+            connection.query(
+                `
+                SELECT 
+                    spc.id,
+                    spc.content,
+                    spc.commented_at,
+                    spc.commenter_id,
+                    u.full_name AS commenter_name,
+                    CASE 
+                        WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                        ELSE NULL
+                    END AS commenter_profile_picture_url
+                FROM showcase_post_comments spc
+                JOIN users u ON spc.commenter_id = u.id
+                WHERE spc.post_id = ?
+                ORDER BY spc.commented_at ASC
+                `,
+                [postId],
+                function (cErr, comments) {
+                    if (cErr) {
+                        console.log(cErr);
+                        return res.status(500).json({
+                            success: false,
+                            message: "Database error while fetching comments.",
+                            error: cErr
+                        });
+                    }
+
+                    res.status(200).json({
+                        success: true,
+                        post: {
+                            id: post.id,
+                            content: post.content,
+                            category: post.category,
+                            creator_id: post.creator_id,
+                            creator_name: post.creator_name,
+                            created_at: post.created_at,
+                            total_reactions: post.total_reactions,
+                            total_comments: post.total_comments,
+                            is_reacted: post.is_reacted,
+                            creator_profile_picture_url: post.creator_profile_picture_url,
+                            media,
+                            comments: comments || []
+                        }
+                    });
                 }
-            });
+            );
         }
     );
 };

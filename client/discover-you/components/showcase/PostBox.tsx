@@ -62,7 +62,7 @@ function PostBox({ post }: any) {
                 }
 
 
-                <View>
+                <View style={styles.creatorTitleContainer}>
                     <Text style={styles.creatorTitle}>
                         {post.creator_name}
                     </Text>
@@ -169,15 +169,13 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.4)",
-        marginRight: 10
+        borderColor: "rgba(0,0,0,0.4)"
     },
     pseudoProfilePicture: {
         width: 40,
         height: 40,
         borderRadius: 20,
         backgroundColor: 'rgba(0,0,0,0.2)',
-        marginRight: 10,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.2)",
         alignItems: 'center',
@@ -190,12 +188,15 @@ const styles = StyleSheet.create({
     creatorContainer: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 4
+        padding: 6
     },
     postTime: {
         color: 'rgba(0,0,0,0.6)',
-        fontSize: 12,
-        marginTop: 1
+        fontSize: 13,
+        marginTop: 2
+    },
+    creatorTitleContainer: {
+        marginLeft: 12
     },
     creatorTitle: {
         fontSize: 15,
@@ -203,13 +204,13 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,0.6)'
     },
     postContent: {
-        padding: 6,
+        padding: 8,
         fontSize: 15
     },
     mediaContainer: {
         backgroundColor: 'rgba(0,0,0,0.1)',
         height: 300,
-        margin: 4,
+        margin: 6,
         borderRadius: 8,
         overflow: "hidden",
     },
@@ -224,7 +225,9 @@ const styles = StyleSheet.create({
     },
     bottomContainer: {
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        marginHorizontal: 6,
+
     },
     actionButton: {
         flex: 1,
@@ -234,6 +237,7 @@ const styles = StyleSheet.create({
         // backgroundColor: "rgba(255, 102, 0, 0.2)",
         borderRadius: 8,
         margin: 2,
+        marginVertical: 4,
         padding: 2
     },
     actionButtonText: {
@@ -254,6 +258,7 @@ const styles = StyleSheet.create({
     },
     actionButtonIconActive: {
         color: '#FF6600',
+        fontSize: 15
     },
     divider: {
         borderBottomColor: "rgba(0,0,0,0.1)",
@@ -294,7 +299,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginHorizontal: 6,
-        marginBottom: 8,
+        marginBottom: 10,
         marginTop: 4
     },
     details: {

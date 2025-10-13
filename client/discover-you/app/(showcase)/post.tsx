@@ -10,10 +10,14 @@ import Header from "@/components/common/Header";
 import useAuth from "../authContext";
 import PostBox from "@/components/showcase/PostBox";
 import NotFound from "@/components/common/NotFound";
+import DoCommentBox from "@/components/showcase/DoCommentBox";
+import CommentBox from "@/components/showcase/CommentBox";
+import Loading from "@/components/common/Loading";
 
 
 export default function Post() {
     const { postId } = useLocalSearchParams();
+    const {updateShowcaseTab} = useAuth();
 
     const [post, setPost] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -36,24 +40,36 @@ export default function Post() {
                 });
         }
         loadData();
-    }, []);
+    }, [updateShowcaseTab]);
 
+    if(loading) {
+        return <Loading/>
+    }
 
     return (
         <View style={styles.container}>
             <Header title="Post" />
             <View style={styles.gap} />
-            <ScrollView style={styles.postContainer}>
-                {
-                    post && <PostBox post={post} />
-                }
-                <View style={styles.sectionBox}>
-                    <Text style={styles.sectionTitle}>Comments</Text>
-                    <View style={styles.divider} />
-                    <NotFound title="No Comments Yet" icon="comments" />
-                </View>
-                <View style={styles.gap} />
-            </ScrollView>
+            {
+                post &&
+                <ScrollView style={styles.postContainer}>
+                    <PostBox post={post} />
+                    <DoCommentBox postId={post.id} />
+                    <View style={styles.sectionBox}>
+                        <Text style={styles.sectionTitle}>Comments</Text>
+                        <View style={styles.divider} />
+                        {
+                            post.comments.length ?
+                                post.comments.map(function (comment: any) {
+                                    return <CommentBox key={comment.id} comment={comment} />
+                                })
+                                :
+                                <NotFound title="No Comments Yet" icon="comments" />
+                        }
+                    </View>
+                    <View style={styles.gap} />
+                </ScrollView>
+            }
         </View>
     );
 }

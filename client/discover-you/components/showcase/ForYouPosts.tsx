@@ -2,9 +2,12 @@ import { StyleSheet, Text, View } from "react-native";
 import { serverUrl } from "../constants";
 import { useEffect, useState } from "react";
 import PostBox from "./PostBox";
+import useAuth from "@/app/authContext";
+import Loading from "../common/Loading";
 
-export default function ForYouPosts({ updatePosts }: any) {
+export default function ForYouPosts() {
     const [posts, setPosts] = useState<any[]>([]);
+    const {updateShowcaseTab} = useAuth();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -25,8 +28,12 @@ export default function ForYouPosts({ updatePosts }: any) {
                 });
         }
         loadData();
-    }, [updatePosts]);
+    }, [updateShowcaseTab]);
 
+    if(loading) {
+        return <Loading/>
+    }
+    
     return (
         <View style={styles.postContainer}>
             {
