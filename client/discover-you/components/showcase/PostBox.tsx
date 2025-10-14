@@ -48,7 +48,17 @@ function PostBox({ post }: any) {
 
     return (
         <View style={styles.postBox} >
-            <View style={styles.creatorContainer}>
+            <TouchableOpacity
+                style={styles.creatorContainer}
+                onPress={() => {
+                    router.push({
+                        pathname: "/(other)/profile",
+                        params: {
+                            personId: post.creator_id
+                        }
+                    })
+                }}
+            >
                 {
                     post.creator_profile_picture_url ?
                         <Image
@@ -71,7 +81,7 @@ function PostBox({ post }: any) {
                     </Text>
                 </View>
 
-            </View>
+            </TouchableOpacity>
             <Text style={styles.postContent}>
                 {post.content}
             </Text>

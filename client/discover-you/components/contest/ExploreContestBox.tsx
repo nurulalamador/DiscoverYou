@@ -3,59 +3,67 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getCategoryIcon, serverUrl } from "../constants";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import CountdownTimer from "../common/Countdown";
 
-function JobBox({ job }: any) {
+function ExploreContestBox({ contest, ongoing }: any) {
     const router = useRouter();
-    return (
-        <TouchableOpacity style={styles.courseBox} onPress={() => {router.push({
-            pathname: "/(hiring)/details",
-            params: { hiringId: job.id }
-        })}}>
-            <View style={styles.details}>
-                <Text numberOfLines={2} style={styles.title}>{job.name}</Text>
-                <View style={styles.category}>
-                    <FontAwesome6 name={getCategoryIcon(job.category)} style={styles.categoryIcon} solid />
 
-                    <Text numberOfLines={1} style={styles.categoryText}>{job.category}</Text>
+    return (
+        <TouchableOpacity style={styles.contestBox} onPress={() => { }}>
+            <View style={styles.details}>
+
+                <Text numberOfLines={2} style={styles.title}>{contest.name}</Text>
+                <View style={styles.category}>
+                    <FontAwesome6 name={getCategoryIcon(contest.category)} size={14} color="#FF6600" solid />
+
+                    <Text numberOfLines={1} style={styles.categoryText}>{contest.category}</Text>
                 </View>
                 <View style={styles.instructorContainer}>
                     {
-                        job.hirer_profile_picture_url ?
+                        contest.organizer_profile_picture_url ?
                             <Image
-                                source={{ uri: serverUrl + job.hirer_profile_picture_url }}
+                                source={{ uri: serverUrl + contest.organizer_profile_picture_url }}
                                 style={styles.profilePicture}
                                 contentFit="cover"
                             /> :
                             <View style={styles.pseudoProfilePicture}>
-                                <Text style={styles.pseudoProfilePictureText}>{job.hirer_name[0]}</Text>
+                                <Text style={styles.pseudoProfilePictureText}>{contest.organizer_name[0]}</Text>
                             </View>
                     }
 
 
                     <View>
                         <Text style={styles.instructorSemiTitle}>
-                            Hiring By
+                            Organized By
                         </Text>
                         <Text style={styles.instructorTitle}>
-                            {job.hirer_name}
+                            {contest.organizer_name}
                         </Text>
                     </View>
                 </View>
             </View>
-            <View style={styles.salary}>
-                <Text style={styles.salaryText}>৳{parseFloat(job.salary)}</Text>
-            </View>
+            {
+                (ongoing == true) ?
+                    <View style={styles.countdownBox}>
+                        <Text style={styles.countdownBoxText}>Ending in</Text>
+                        <CountdownTimer initialSeconds={contest.ending_in} style={styles.countdownBoxCount} />
+                    </View>
+                    :
+                    <View style={styles.countdownBox}>
+                        <Text style={styles.countdownBoxText}>Starting in</Text>
+                        <CountdownTimer initialSeconds={contest.starting_in} style={styles.countdownBoxCount} />
+                    </View>
+            }
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
-    courseBox: {
+    contestBox: {
+        width: 300,
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         margin: 6,
-        flexDirection: "row",
-        alignItems: "center",
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.1)",
         padding: 8
@@ -66,16 +74,16 @@ const styles = StyleSheet.create({
         color: 'rgba(0,0,0,0.6)'
     },
     previewImage: {
-        width: 152,
-        height: 152,
+        width: 124,
+        height: 124,
         margin: 8,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)"
+        borderColor: "rgba(0,0,0,0.4)"
     },
     pseudoPreviewImage: {
-        width: 152,
-        height: 152,
+        width: 124,
+        height: 124,
         margin: 8,
         borderRadius: 8,
         backgroundColor: "rgba(0,0,0,0.1)",
@@ -85,15 +93,15 @@ const styles = StyleSheet.create({
         borderColor: "rgba(0,0,0,0.2)"
     },
     details: {
-        flex: 1,
-        margin: 6
+        margin: 6,
+        flex: 1
     },
     profilePicture: {
         width: 30,
         height: 30,
         borderRadius: 15,
         borderWidth: 1,
-        borderColor: "rgba(0,0,0,0.2)",
+        borderColor: "rgba(0,0,0,0.4)",
         marginRight: 8
     },
     pseudoProfilePicture: {
@@ -121,41 +129,47 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 8,
         marginVertical: 8,
-        overflow: 'hidden',
-        maxWidth: '100%'
+        marginBottom: 12,
+        overflow: 'hidden'
     },
     categoryText: {
         color: "#FF6600",
         fontWeight: "bold",
-        fontSize: 12
-    },
-    categoryIcon: {
-        fontSize: 14,
-        color: "#FF6600"
+        fontSize: 12,
+        maxWidth: 120
     },
     instructorContainer: {
         flexDirection: "row",
-        alignItems: "center",
-        marginTop: 4
+        alignItems: "center"
     },
     instructorSemiTitle: {
         color: "#FF6600",
         fontSize: 11,
-        fontWeight: "bold"
+        fontWeight: "600"
     },
     instructorTitle: {
         fontSize: 12,
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
     },
-    salary: {
-        padding: 8
+    countdownBox: {
+        backgroundColor: "rgba(0,0,0,0.15)",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        margin: 4,
+        marginTop: 8
     },
-    salaryText: {
-        color: "#FF6600",
-        fontSize: 20,
-        fontWeight: "bold"
+    countdownBoxText: {
+        fontSize: 13,
+        color: "rgba(0,0,0,0.6)"
+    },
+    countdownBoxCount: {
+        fontWeight: "bold",
+        color: "rgba(0,0,0,0.6)"
     }
 })
 
-export default JobBox;
+export default ExploreContestBox;

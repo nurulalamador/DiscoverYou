@@ -4,6 +4,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import useAuth, { AuthProvider } from "./authContext";
 import { serverUrl } from "../components/constants";
 import { Stack, useRouter, useSegments } from "expo-router";
+import Loading from "@/components/common/Loading";
 
 function RootLayoutInner() {
   const { isAuthenticated, setIsAuthenticated, setUser } = useAuth();
@@ -51,9 +52,7 @@ function RootLayoutInner() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="orange" />
-      </View>
+      <Loading/>
     );
   }
 

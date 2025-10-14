@@ -161,7 +161,7 @@ export default function Inbox() {
                                     <Text style={styles.otherMessageText}>{msg.content}</Text>
                                 </View>
                         })
-                        : <View style={{ padding: 12 }}><Text>No Messages</Text></View>
+                        : <></>
                 }
             </ScrollView>
             <View style={styles.messageInputContainer}>

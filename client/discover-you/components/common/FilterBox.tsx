@@ -54,7 +54,7 @@ export default function FilterBox({sort} : any) {
                                 key={cat}
                                 style={(cat == formData.category) ? styles.dropdownItemActive : styles.dropdownItem}
                                 onPress={() => {
-                                    handleInputChange("category", cat);
+                                    handleInputChange("sort", cat);
                                     setShowSortDropdown(false);
                                 }}
                             >

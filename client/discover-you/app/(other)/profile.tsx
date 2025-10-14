@@ -46,7 +46,7 @@ export default function Profile() {
             <ScrollView contentContainerStyle={styles.contentContainer}>
                 <View style={styles.gap} />
                 {
-                    person && <ProfileDetailsBox person={person} />
+                    person && <ProfileDetailsBox person={person} self={personId == user.id}/>
                 }
                 <View style={styles.gap} />
             </ScrollView>

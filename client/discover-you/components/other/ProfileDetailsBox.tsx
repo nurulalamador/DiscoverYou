@@ -5,7 +5,7 @@ import { FontAwesome6 } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import { useState } from "react"
 
-export default function ProfileDetailsBox({ person }: any) {
+export default function ProfileDetailsBox({ person, self }: { person: any, self: boolean }) {
     const [isFollowed, setIsFollowed] = useState(Boolean(person.is_followed));
     const [followers, setFollowers] = useState(person.followers);
     const router = useRouter();
@@ -28,11 +28,11 @@ export default function ProfileDetailsBox({ person }: any) {
                 if (data.success) {
                     if (data.status == "followed") {
                         setIsFollowed(true);
-                        setFollowers((old:any)=>parseInt(old)+1);
+                        setFollowers((old: any) => parseInt(old) + 1);
                     }
                     else if (data.status == "unfollowed") {
                         setIsFollowed(false);
-                        setFollowers((old:any)=>parseInt(old)-1);
+                        setFollowers((old: any) => parseInt(old) - 1);
                     }
                 }
                 else {
@@ -56,6 +56,17 @@ export default function ProfileDetailsBox({ person }: any) {
                         <View style={styles.pseudoProfilePicture}>
                             <Text style={styles.pseudoProfilePictureText}>{person.full_name[0]}</Text>
                         </View>
+                }
+                {
+                    self &&
+                    <TouchableOpacity 
+                        style={styles.editPicture}
+                        onPress={()=>{
+                            router.push("/(setting)/updateProfilePicture")
+                        }}
+                    >
+                        <FontAwesome6 name="pen" style={styles.editPictureIcon} solid />
+                    </TouchableOpacity>
                 }
             </View>
             <Text style={styles.personName}>{person.full_name}</Text>
@@ -90,31 +101,48 @@ export default function ProfileDetailsBox({ person }: any) {
                 </View>
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.orangeButton} onPress={toggleFollow}>
-                    {
-                        isFollowed ?
-                            <>
-                                <FontAwesome6 name="user-check" style={styles.orangeButtonIcon} />
-                                <Text style={styles.orangeButtonText}>Followed</Text>
-                            </> :
-                            <>
-                                <FontAwesome6 name="user-plus" style={styles.orangeButtonIcon} />
-                                <Text style={styles.orangeButtonText}>Follow</Text>
-                            </>
-                    }
+                {
+                    self ?
+                        <TouchableOpacity style={styles.orangeButton} onPress={() => {
+                            router.push({
+                                pathname: "/(setting)/editProfile",
+                                params: {
+                                    personId: person.id
+                                }
+                            })
+                        }}>
+                            <FontAwesome6 name="user-pen" style={styles.orangeButtonIcon} solid />
+                            <Text style={styles.orangeButtonText}>Edit Profile</Text>
+                        </TouchableOpacity>
+                        :
+                        <>
+                            <TouchableOpacity style={styles.orangeButton} onPress={toggleFollow}>
+                                {
+                                    isFollowed ?
+                                        <>
+                                            <FontAwesome6 name="user-check" style={styles.orangeButtonIcon} />
+                                            <Text style={styles.orangeButtonText}>Followed</Text>
+                                        </> :
+                                        <>
+                                            <FontAwesome6 name="user-plus" style={styles.orangeButtonIcon} />
+                                            <Text style={styles.orangeButtonText}>Follow</Text>
+                                        </>
+                                }
 
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.grayButton} onPress={() => {
-                    router.push({
-                        pathname: "/(message)/inbox",
-                        params: {
-                            personId: person.id
-                        }
-                    })
-                }}>
-                    <FontAwesome6 name="message" style={styles.grayButtonIcon} solid />
-                    <Text style={styles.grayButtonText}>Message</Text>
-                </TouchableOpacity>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.grayButton} onPress={() => {
+                                router.push({
+                                    pathname: "/(message)/inbox",
+                                    params: {
+                                        personId: person.id
+                                    }
+                                })
+                            }}>
+                                <FontAwesome6 name="message" style={styles.grayButtonIcon} solid />
+                                <Text style={styles.grayButtonText}>Message</Text>
+                            </TouchableOpacity>
+                        </>
+                }
             </View>
         </View>
     )
@@ -127,7 +155,8 @@ const styles = StyleSheet.create({
     profilePictureContainer: {
         marginTop: -100,
         backgroundColor: "#FFFFFF",
-        borderRadius: "100%"
+        borderRadius: "100%",
+        position: "relative"
     },
     profilePicture: {
         width: 200,
@@ -149,6 +178,21 @@ const styles = StyleSheet.create({
     pseudoProfilePictureText: {
         fontSize: 100,
         color: 'rgba(0,0,0,0.6)'
+    },
+    editPicture: {
+        position: "absolute",
+        right: 14,
+        top: 14,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: "#FF6600",
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    editPictureIcon: {
+        color:  "#FFFFFF",
+        fontSize: 15
     },
     profileDetailBox: {
         backgroundColor: "#FFFFFF",
