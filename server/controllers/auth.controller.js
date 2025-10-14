@@ -52,12 +52,12 @@ exports.login = async (req, res) => {
                 END AS profile_picture_url,
                 GROUP_CONCAT(ui.interest) AS interests
             FROM users AS u
-            JOIN user_interests AS ui 
+            LEFT JOIN user_interests AS ui 
             ON ui.user_id = u.id
-            WHERE u.email = ? OR u.username = ?
-            GROUP BY u.id;`,
-            [email, email],
+            WHERE u.username = ?;`,
+            [email],
             async (err, results) => {
+                console.log(results);
                 if (err) {
                     // throw err;
                     return res.status(500).json({

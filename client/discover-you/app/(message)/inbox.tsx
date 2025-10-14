@@ -111,7 +111,7 @@ export default function Inbox() {
                             }
                             <View style={styles.headerDetails}>
                                 <Text style={styles.personName}>{person.full_name}</Text>
-                                <Text style={styles.personActive}>1h ago</Text>
+                                <Text style={styles.personActive}>Online</Text>
                             </View>
                         </>
                     }
@@ -152,14 +152,12 @@ export default function Inbox() {
                 {
                     messages &&
                         messages.length ?
-                        messages.map(function (msg: any) {
+                        messages.map(function (msg: any, index: any) {
 
-                            return msg.sent_by_me ? <View key={msg.id} style={styles.ownMessageBox}>
-                                <Text style={styles.ownMessageText}>{msg.content}</Text>
+                            return <View key={index}
+                                style={msg.sent_by_me ? styles.ownMessageBox : styles.otherMessageBox}>
+                                <Text style={msg.sent_by_me ? styles.ownMessageText : styles.otherMessageText}>{msg.content}</Text>
                             </View>
-                                : <View key={msg.id} style={styles.otherMessageBox}>
-                                    <Text style={styles.otherMessageText}>{msg.content}</Text>
-                                </View>
                         })
                         : <></>
                 }

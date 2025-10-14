@@ -40,6 +40,13 @@ export default function Settings() {
                         <Text style={styles.menuItemText}>Change Password</Text>
                     </TouchableOpacity>
                     <View style={styles.divider}></View>
+                    <TouchableOpacity style={styles.menuItem}
+                        onPress={()=> router.push("/(setting)/changeInterest")}
+                    >
+                        <FontAwesome6 name="star" style={styles.menuItemIcon} solid/>
+                        <Text style={styles.menuItemText}>Change Interest</Text>
+                    </TouchableOpacity>
+                    <View style={styles.divider}></View>
                     <TouchableOpacity style={styles.menuItem}>
                         <FontAwesome6 name="trash" style={styles.menuItemIconRed} />
                         <Text style={styles.menuItemTextRed}>Delete Account</Text>

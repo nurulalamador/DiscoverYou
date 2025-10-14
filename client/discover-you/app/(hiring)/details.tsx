@@ -125,24 +125,27 @@ export default function Details() {
                                 </View>
                             </TouchableOpacity>
                             <View style={styles.divider} />
-                            <View style={styles.detailsContainer}>
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="user" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>{hiring.total_participants}</Text>
-                                    <Text style={styles.detailSemiTitle}>Students</Text>
+
+                            <View style={styles.jobInfo}>
+                                <FontAwesome6 style={styles.jobInfoIcon} name="briefcase" solid />
+                                <View style={styles.jobInfoDetails}>
+                                    <Text style={styles.jobInfoSemiTitle}>Job Type</Text>
+                                    <Text style={styles.jobInfoTitle}>Permanent </Text>
                                 </View>
-                                <View style={styles.detailDivider} />
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="video" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>{hiring.total_materials}</Text>
-                                    <Text style={styles.detailSemiTitle}>Materials</Text>
+                            </View>
+                            <View style={styles.jobInfo}>
+                                <FontAwesome6 style={styles.jobInfoIcon} name="house" solid />
+                                <View style={styles.jobInfoDetails}>
+                                    <Text style={styles.jobInfoSemiTitle}>Working Place</Text>
+                                    <Text style={styles.jobInfoTitle}>Remote Job</Text>
                                 </View>
-                                <View style={styles.detailDivider} />
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="star" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>5.0</Text>
-                                    <Text style={styles.detailSemiTitle}>Ratings</Text>
-                                </View>
+                            </View>
+                            <View style={styles.divider} />
+                            <View style={styles.salaryContainer}>
+                                <Text style={styles.salaryText}>Salary</Text>
+                                <Text style={styles.salaryCount}>
+                                    {hiring.salary ? `৳${hiring.salary}` : "Not specified"}
+                                </Text>
                             </View>
                         </View>
                         : <></>
@@ -152,7 +155,7 @@ export default function Details() {
             <View style={styles.enrollContainer}>
                 <TouchableOpacity
                     style={styles.enrolledButton}
-                    onPress={()=>{}}
+                    onPress={() => { }}
                 >
                     <Text style={styles.enrolledButtonText}>Apply Now</Text>
                 </TouchableOpacity>
@@ -352,4 +355,50 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 15,
     },
+    jobInfo: {
+        flexDirection: "row",
+        alignItems: "center",
+        margin: 6
+    },
+    jobInfoIcon: {
+        fontSize: 20,
+        width: 30,
+        textAlign: "center",
+        color: "rgba(0,0,0,0.6)",
+    },
+    jobInfoDetails: {
+        marginLeft: 10
+    },
+    jobInfoSemiTitle: {
+        fontSize: 14,
+        color: "rgba(0,0,0,0.6)",
+        fontWeight: 500
+    },
+    jobInfoTitle: {
+        fontWeight: "bold",
+        fontSize: 15,
+        color: "rgba(0,0,0,0.8)"
+    },
+    salaryContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        margin: 8
+    },
+    salaryText: {
+        fontSize: 15,
+        fontWeight: 500
+    } ,
+    salaryCount: {
+        fontSize: 24,
+        fontWeight: 900,
+        color: "#FF6600"
+    } 
 });
+
+
+                            // <View style={styles.jobInfo}>
+                            //     <FontAwesome6 style={styles.jobInfoIcon} name="star" solid />
+                            //     <View style={styles.jobInfoDetails}>
+                            //         <Text style={styles.jobInfoSemiTitle}>Job Type</Text>
+                            //         <Text style={styles.jobInfoTitle}>Pe

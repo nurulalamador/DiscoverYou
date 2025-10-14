@@ -91,10 +91,10 @@ export default function Login() {
           )
         }
         <View style={styles.label}>
-          <Text style={styles.labelTitle}>Email or Username</Text>
+          <Text style={styles.labelTitle}>Username</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter your email or username"
+            placeholder="Enter your username"
             placeholderTextColor="#888"
             keyboardType="email-address"
             autoCapitalize="none"

@@ -13,6 +13,7 @@ function JobBox({ job }: any) {
         })}}>
             <View style={styles.details}>
                 <Text numberOfLines={2} style={styles.title}>{job.name}</Text>
+                <Text numberOfLines={1} style={styles.companyName}>{job.company}</Text>
                 <View style={styles.category}>
                     <FontAwesome6 name={getCategoryIcon(job.category)} style={styles.categoryIcon} solid />
 
@@ -64,6 +65,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
+    },
+    companyName: {
+        fontSize: 14,
+        color: "#FF6600",
+        fontWeight: 600,
+        marginVertical: 4,
     },
     previewImage: {
         width: 152,
