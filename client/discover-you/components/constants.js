@@ -17,28 +17,38 @@ const categories = [
 ];
 
 function timeAgo(isoDate) {
-  const now = new Date();
-  const past = new Date(isoDate);
+    const now = new Date();
+    const past = new Date(isoDate);
 
-  const diff = now.getTime() - past.getTime(); // difference in milliseconds
+    const diff = now.getTime() - past.getTime(); // difference in milliseconds
 
-  const seconds = Math.floor(diff / 1000);
-  if (seconds < 60) return `${seconds}s ago`;
+    const seconds = Math.floor(diff / 1000);
+    if (seconds < 60) return `${seconds}s ago`;
 
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
 
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
 
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
 
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months}mo ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}mo ago`;
 
-  const years = Math.floor(days / 365);
-  return `${years}y ago`;
+    const years = Math.floor(days / 365);
+    return `${years}y ago`;
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
 }
 
 function formatDuration(seconds) {
@@ -49,34 +59,34 @@ function formatDuration(seconds) {
 }
 
 function getCategoryIcon(category) {
-    switch(category) {
-        case "Music and Singing": 
+    switch (category) {
+        case "Music and Singing":
             return "music"; break;
-        case "Graphics Designing": 
+        case "Graphics Designing":
             return "vector-square"; break;
-        case "Web Development": 
+        case "Web Development":
             return "code"; break;
-        case "Literature": 
+        case "Literature":
             return "pen-to-square"; break;
-        case "Competitive Programming": 
+        case "Competitive Programming":
             return "terminal"; break;
-        case "Dancing": 
+        case "Dancing":
             return "person-walking"; break;
-        case "App Development": 
+        case "App Development":
             return "mobile-screen-button"; break;
-        case "Arts and Crafts": 
+        case "Arts and Crafts":
             return "palette"; break;
-        case "Gaming": 
+        case "Gaming":
             return "gamepad"; break;
-        case "Debating": 
+        case "Debating":
             return "users-line"; break;
-        case "Robotics": 
+        case "Robotics":
             return "robot"; break;
-        case "Cooking": 
+        case "Cooking":
             return "utensils"; break;
-        default: 
+        default:
             return "star"; break;
     }
 }
 
-export { serverUrl, getCategoryIcon, categories, formatDuration, timeAgo };
+export { serverUrl, getCategoryIcon, categories, formatDuration, timeAgo, formatDate };

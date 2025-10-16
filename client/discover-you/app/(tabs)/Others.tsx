@@ -65,13 +65,8 @@ export default function Others() {
       </View>
       <View style={styles.menuContainer}>
         <TouchableOpacity style={styles.menuItem}>
-          <FontAwesome6 name="store" style={styles.menuItemIcon} />
-          <Text style={styles.menuItemText}>Marketplace</Text>
-        </TouchableOpacity>
-        <View style={styles.divider}></View>
-        <TouchableOpacity style={styles.menuItem}>
-          <FontAwesome6 name="note-sticky" style={styles.menuItemIcon} />
-          <Text style={styles.menuItemText}>Smart Notes</Text>
+          <FontAwesome6 name="file" style={styles.menuItemIcon} />
+          <Text style={styles.menuItemText}>My Resume</Text>
         </TouchableOpacity>
         <View style={styles.divider}></View>
         <TouchableOpacity

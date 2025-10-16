@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Image } from "expo-image";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { getCategoryIcon, serverUrl } from "@/components/constants";
+import { formatDate, getCategoryIcon, serverUrl } from "@/components/constants";
 import NotFound from "@/components/common/NotFound";
 import Header from "@/components/common/Header";
 import useAuth from "../authContext";
@@ -12,15 +12,17 @@ import Loading from "@/components/common/Loading";
 export default function Details() {
     const { hiringId } = useLocalSearchParams();
     const [hiring, setHiring] = useState<any>();
-    const [materials, setMaterials] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [isApplied, setIsApplied] = useState(false);
+    const [isReady, setIsReady] = useState(true);
+    const [totalApplicants, setTotalApplicants] = useState<number>(0);
 
     const router = useRouter();
 
 
     function applyHiring() {
-        fetch(`${serverUrl}/hiring/enroll`, {
+        setIsReady(false);
+        fetch(`${serverUrl}/hiring/toggleApply`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -35,8 +37,13 @@ export default function Details() {
             })
             .then(data => {
                 if (data.success) {
-                    if (data.success) {
-                        setIsEnrolled(true);
+                    if (data.message == "unapplied") {
+                        setTotalApplicants((prev: number) => prev - 1);
+                        setIsApplied(false);
+                    }
+                    else if (data.message == "applied") {
+                        setTotalApplicants((prev: number) => prev + 1);
+                        setIsApplied(true);
                     }
                 }
                 else {
@@ -45,6 +52,9 @@ export default function Details() {
             })
             .catch(error => {
                 console.error("Enrolling error:", error);
+            })
+            .finally(() => {
+                setIsReady(true);
             });
     }
 
@@ -57,8 +67,8 @@ export default function Details() {
                 .then(res => res.json())
                 .then(data => {
                     setHiring(data.hiring);
-                    setIsEnrolled(Boolean(data.hiring.is_enrolled));
-                    setMaterials(data.materials);
+                    setTotalApplicants(Number(data.hiring.total_applicants));
+                    setIsApplied(Boolean(data.hiring.is_applied));
                 })
                 .catch(function (err) {
                     console.log("Hiring data fetching failed:", err);
@@ -80,9 +90,27 @@ export default function Details() {
             <ScrollView style={styles.contentContainer}>
                 <View style={styles.gap} />
                 {
+                    hiring && isApplied ?
+                        <View style={styles.contentBox}>
+                            <View style={styles.statusContainer}>
+                                <Text style={styles.statusTitle}>Application Status</Text>
+                                {
+                                    hiring.application_status == "accepted" ?
+                                        <Text style={styles.statusAccepted}>Accepted</Text> :
+                                        hiring.application_status == "rejected" ?
+                                            <Text style={styles.statusRejected}>Rejected</Text>
+                                            :
+                                            <Text style={styles.statusPending}>Pending</Text>
+                                }
+                            </View>
+                        </View>
+                        : <></>
+                }
+                {
                     hiring ?
                         <View style={styles.contentBox}>
                             <Text style={styles.title}>{hiring.name}</Text>
+                            <Text style={styles.company}>{hiring.company}</Text>
                             <View style={styles.category}>
                                 <FontAwesome6 name={getCategoryIcon(hiring.category)} style={styles.categoryIcon} solid />
                                 <Text numberOfLines={1} style={styles.categoryText}>{hiring.category}</Text>
@@ -125,26 +153,48 @@ export default function Details() {
                                 </View>
                             </TouchableOpacity>
                             <View style={styles.divider} />
-
-                            <View style={styles.jobInfo}>
-                                <FontAwesome6 style={styles.jobInfoIcon} name="briefcase" solid />
-                                <View style={styles.jobInfoDetails}>
-                                    <Text style={styles.jobInfoSemiTitle}>Job Type</Text>
-                                    <Text style={styles.jobInfoTitle}>Permanent </Text>
+                            <View style={styles.detailsContainer}>
+                                <View style={styles.jobInfoContainer}>
+                                    <View style={styles.jobInfo}>
+                                        <FontAwesome6 style={styles.jobInfoIcon} name="briefcase" solid />
+                                        <View style={styles.jobInfoDetails}>
+                                            <Text style={styles.jobInfoSemiTitle}>Job Type</Text>
+                                            <Text style={styles.jobInfoTitle}>{hiring.type} </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.jobInfo}>
+                                        <FontAwesome6 style={styles.jobInfoIcon} name="calendar-alt" solid />
+                                        <View style={styles.jobInfoDetails}>
+                                            <Text style={styles.jobInfoSemiTitle}>Deadline</Text>
+                                            <Text style={styles.jobInfoTitle}>{formatDate(hiring.last_date)}</Text>
+                                        </View>
+                                    </View>
                                 </View>
-                            </View>
-                            <View style={styles.jobInfo}>
-                                <FontAwesome6 style={styles.jobInfoIcon} name="house" solid />
-                                <View style={styles.jobInfoDetails}>
-                                    <Text style={styles.jobInfoSemiTitle}>Working Place</Text>
-                                    <Text style={styles.jobInfoTitle}>Remote Job</Text>
+                                <View style={styles.jobInfoContainer}>
+                                    <View style={styles.jobInfo}>
+                                        <FontAwesome6 style={styles.jobInfoIcon} name={hiring.work_location == "Remote" ? "house" : "building"} solid />
+                                        <View style={styles.jobInfoDetails}>
+                                            <Text style={styles.jobInfoSemiTitle}>Work Location</Text>
+                                            <Text style={styles.jobInfoTitle}>{hiring.work_location}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.jobInfo}>
+                                        <FontAwesome6 style={styles.jobInfoIcon} name="users" solid />
+                                        <View style={styles.jobInfoDetails}>
+                                            <Text style={styles.jobInfoSemiTitle}>Total Applicants</Text>
+                                            <Text style={styles.jobInfoTitle}>{totalApplicants + ""}</Text>
+                                        </View>
+                                    </View>
                                 </View>
                             </View>
                             <View style={styles.divider} />
                             <View style={styles.salaryContainer}>
-                                <Text style={styles.salaryText}>Salary</Text>
+                                <View>
+                                    <Text style={styles.salaryTextTitle}>Salary</Text>
+                                    <Text style={styles.salaryTextSemiTitle}>({hiring.type == "Contructual" ? "One-Time" : "Per Month"})</Text>
+                                </View>
                                 <Text style={styles.salaryCount}>
-                                    {hiring.salary ? `৳${hiring.salary}` : "Not specified"}
+                                    ৳{hiring.salary}
                                 </Text>
                             </View>
                         </View>
@@ -153,12 +203,34 @@ export default function Details() {
                 <View style={styles.gap} />
             </ScrollView>
             <View style={styles.enrollContainer}>
-                <TouchableOpacity
-                    style={styles.enrolledButton}
-                    onPress={() => { }}
-                >
-                    <Text style={styles.enrolledButtonText}>Apply Now</Text>
-                </TouchableOpacity>
+                {
+                    isApplied ?
+                        <View style={styles.registeredContainer}>
+                            <View style={styles.registrationStatus}>
+                                <FontAwesome6 name="circle-check" style={styles.registrationStatusIcon} solid />
+                                <Text style={styles.registrationStatusText}>Applied</Text>
+                            </View>
+                            <TouchableOpacity
+                                style={isReady ? styles.enrolledButton : [styles.enrolledButton, { opacity: 0.6 }]}
+                                onPress={applyHiring}
+                            >
+                                <Text style={styles.enrolledButtonText}>Cancel Application</Text>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        <TouchableOpacity
+                            style={isReady ? styles.enrolledButton : [styles.enrolledButton, { opacity: 0.6 }]}
+                            onPress={applyHiring}
+                        >
+                            {isReady ?
+                                <Text style={styles.enrolledButtonText}>Apply Now</Text>
+                                :
+                                <Text style={styles.enrolledButtonText}>Loading...</Text>
+
+                            }
+                        </TouchableOpacity>
+                }
+
             </View>
         </View>
     );
@@ -210,6 +282,13 @@ const styles = StyleSheet.create({
         margin: 8,
         color: "rgba(0,0,0,0.8)"
     },
+    company: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        margin: 8,
+        marginTop: 0,
+        color: "#FF6600"
+    },
     category: {
         backgroundColor: "rgba(255, 102, 0, 0.2)",
         paddingHorizontal: 12,
@@ -236,7 +315,7 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 13,
         margin: 8,
-        marginHorizontal: 8,
+        marginHorizontal: 10,
         textAlign: 'justify',
         color: "rgba(0,0,0,0.6)"
     },
@@ -294,14 +373,13 @@ const styles = StyleSheet.create({
     },
     detailsContainer: {
         flexDirection: "row",
-        marginHorizontal: 8,
-        marginTop: 6,
-        marginBottom: 8,
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 4
     },
     detail: {
-        flex: 1,
-        alignItems: 'center'
+        alignItems: 'center',
+        margin: 2
     },
     detailTitle: {
         fontSize: 20,
@@ -355,50 +433,126 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 15,
     },
+    jobInfoContainer: {
+        flex: 1,
+    },
     jobInfo: {
+        flex: 1,
         flexDirection: "row",
         alignItems: "center",
-        margin: 6
+        margin: 4,
+        marginVertical: 6
     },
     jobInfoIcon: {
         fontSize: 20,
         width: 30,
+        marginHorizontal: 4,
         textAlign: "center",
         color: "rgba(0,0,0,0.6)",
     },
     jobInfoDetails: {
-        marginLeft: 10
+        marginLeft: 6
     },
     jobInfoSemiTitle: {
-        fontSize: 14,
+        fontSize: 12,
         color: "rgba(0,0,0,0.6)",
         fontWeight: 500
     },
     jobInfoTitle: {
         fontWeight: "bold",
-        fontSize: 15,
+        fontSize: 14,
         color: "rgba(0,0,0,0.8)"
     },
     salaryContainer: {
+        alignItems: "center",
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
-        margin: 8
+        margin: 10
     },
-    salaryText: {
+    salaryTextTitle: {
         fontSize: 15,
-        fontWeight: 500
-    } ,
+        fontWeight: "bold",
+        color: "rgba(0,0,0,0.6)"
+    },
+    salaryTextSemiTitle: {
+        fontSize: 12,
+        color: "rgba(0,0,0,0.4)",
+        fontWeight: 500,
+        fontStyle: "italic",
+        marginTop: 2
+    },
     salaryCount: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 900,
         color: "#FF6600"
-    } 
+    },
+    registeredContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flex: 1
+    },
+    registrationStatus: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 8,
+        marginRight: 16,
+    },
+    registrationStatusIcon: {
+        fontSize: 20,
+        color: "#4CAF50"
+    },
+    registrationStatusText: {
+        color: "rgba(0,0,0,0.6)",
+        fontWeight: "bold",
+        fontSize: 15,
+        marginLeft: 8
+    },
+    statusContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+    },
+    statusTitle: {
+        fontSize: 14,
+        fontWeight: 500,
+        padding: 8
+    },
+    statusPending: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: "rgba(0, 0, 0, 0.8)",
+        backgroundColor: "rgba(0, 0, 0, 0.15)",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        margin: 4
+    },
+    statusAccepted: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: "rgba(70, 170, 100, 1)",
+        backgroundColor: "rgba(70, 170, 100, 0.2)",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        margin: 4
+    },
+    statusRejected: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: "rgba(225, 50, 50, 1)",
+        backgroundColor: "rgba(225, 50, 50, 0.2)",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        margin: 4
+    }
 });
 
 
-                            // <View style={styles.jobInfo}>
-                            //     <FontAwesome6 style={styles.jobInfoIcon} name="star" solid />
-                            //     <View style={styles.jobInfoDetails}>
-                            //         <Text style={styles.jobInfoSemiTitle}>Job Type</Text>
-                            //         <Text style={styles.jobInfoTitle}>Pe
+// <View style={styles.jobInfo}>
+//     <FontAwesome6 style={styles.jobInfoIcon} name="star" solid />
+//     <View style={styles.jobInfoDetails}>
+//         <Text style={styles.jobInfoSemiTitle}>Job Type</Text>
+//         <Text style={styles.jobInfoTitle}>Pe
