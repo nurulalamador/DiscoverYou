@@ -18,7 +18,7 @@ type Course = {
 export default function Course() {
   const router = useRouter();
 
-  const {updateCourseTab} = useAuth();
+  const {updateCourse} = useAuth();
 
   const [exploreCourses, setExploreCourses] = useState<Course[]>([]);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
@@ -43,7 +43,7 @@ export default function Course() {
         });
     }
     loadData();
-  }, [updateCourseTab]);
+  }, [updateCourse]);
 
   if(loading) {
     return <Loading/>

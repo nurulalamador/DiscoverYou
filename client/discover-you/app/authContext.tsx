@@ -5,8 +5,9 @@ const AuthContext = createContext<any>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>();
-  const [updateCourseTab, setUpdateCourseTab] = useState(0);
-  const [updateShowcaseTab, setUpdateShowcaseTab] = useState(0);
+  const [updateCourse, setUpdateCourse] = useState(0);
+  const [updateShowcase, setUpdateShowcase] = useState(0);
+  const [updateMessage, setUpdateMessage] = useState(0);
 
   return (
     <AuthContext.Provider value={{ 
@@ -14,10 +15,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated, 
       user, 
       setUser,
-      updateCourseTab,
-      setUpdateCourseTab,
-      updateShowcaseTab,
-      setUpdateShowcaseTab
+      updateCourse,
+      setUpdateCourse,
+      updateShowcase,
+      setUpdateShowcase,
+      updateMessage,
+      setUpdateMessage
     }}>
       {children}
     </AuthContext.Provider>

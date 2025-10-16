@@ -14,7 +14,7 @@ import Loading from "@/components/common/Loading";
 
 export default function Material() {
     const { courseId, materialId } = useLocalSearchParams();
-    const { user, setUpdateCourseTab } = useAuth();
+    const { user, setUpdateCourse } = useAuth();
     const [course, setCourse] = useState<any>();
     const [materials, setMaterials] = useState<any[]>([]);
     const [material, setMaterial] = useState<any>();
@@ -47,7 +47,7 @@ export default function Material() {
                     setCourse(data.course);
                     setMaterials(data.materials);
                     setMaterial(data.materials.filter(function (material: any) { return material.id == materialId })[0]);
-                    setUpdateCourseTab((old:any)=>old+1);
+                    setUpdateCourse((old:any)=>old+1);
                 })
                 .catch(function (err) {
                     console.log("Course data fetching failed:", err);

@@ -1,3 +1,4 @@
 # Ignore environment variable files
 server/.env
 node_modules/
+client/discover-you/.expo/

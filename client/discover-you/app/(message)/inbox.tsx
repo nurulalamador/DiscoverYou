@@ -1,9 +1,11 @@
+import Loading from "@/components/common/Loading";
 import { serverUrl } from "@/components/constants";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import useAuth from "../authContext";
 
 export default function Inbox() {
     const [content, setContent] = useState<string>("");
@@ -13,12 +15,15 @@ export default function Inbox() {
     const [loading, setLoading] = useState<boolean>(true);
     const [updateFlag, setUpdateFlag] = useState(0);
 
+    const {setUpdateMessage, updateMessage} = useAuth();
+
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
     const scrollViewRef = useRef<ScrollView>(null);
 
     const router = useRouter();
 
     useEffect(() => {
-        let intervalId: any;
 
         function loadMessages() {
             fetch(`${serverUrl}/messaging/inbox/${personId}`, {
@@ -30,9 +35,10 @@ export default function Inbox() {
                     setMessages(data.messages);
                     setPerson(data.person);
                     setLoading(false);
-                    if (scrollViewRef.current) {
-                        scrollViewRef.current.scrollToEnd({ animated: true });
-                    }
+                    setUpdateMessage((prev:any) => prev + 1);
+                    // if (scrollViewRef.current) {
+                    //     scrollViewRef.current.scrollToEnd({ animated: true });
+                    // }
                 })
                 .catch(function (err) {
                     console.log("Messages data fetching failed:", err);
@@ -41,23 +47,31 @@ export default function Inbox() {
         }
 
         loadMessages();
-        intervalId = setInterval(loadMessages, 2000);
+    }, [updateFlag, updateMessage]);
+
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+            scrollViewRef.current?.scrollToEnd({ animated: true });
+            setKeyboardVisible(true);
+        });
+
+        const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+            setKeyboardVisible(false);
+        });
 
         return () => {
-            clearInterval(intervalId);
+            showSubscription.remove();
+            hideSubscription.remove();
         };
-    }, [updateFlag]);
+    }, []);
 
-    if (loading) {
+    if (loading || !scrollViewRef) {
         return (
-            <View style={styles.container}>
-                <Text>Loading...</Text>
-            </View>
+            <Loading />
         );
     }
 
     function sendMessage() {
-        console.log("Sending message:", content);
 
         fetch(`${serverUrl}/messaging/send`, {
             method: "POST",
@@ -72,7 +86,6 @@ export default function Inbox() {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 if (data.success) {
                     setMessages((prevMessages: any) => [...prevMessages, data.message]);
                     setContent("");
@@ -88,7 +101,6 @@ export default function Inbox() {
         <KeyboardAvoidingView
             behavior="padding"
             style={styles.container}
-            keyboardVerticalOffset={40}
         >
             <View style={styles.header}>
                 <View style={styles.headerLeftContainer}>
@@ -120,6 +132,9 @@ export default function Inbox() {
             <ScrollView
                 ref={scrollViewRef}
                 contentContainerStyle={styles.messageContainer}
+                onContentSizeChange={() =>
+                    scrollViewRef.current?.scrollToEnd({ animated: false })
+                }
             >
                 {
                     person &&
@@ -162,7 +177,7 @@ export default function Inbox() {
                         : <></>
                 }
             </ScrollView>
-            <View style={styles.messageInputContainer}>
+            <View style={isKeyboardVisible ? [styles.messageInputContainer, {marginBottom: 40}] : styles.messageInputContainer}>
                 <View style={styles.iconButtonContainer}>
                     <TouchableOpacity onPress={() => { }}>
                         <FontAwesome6 name="image" style={styles.iconButton} />
@@ -335,7 +350,8 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 100,
         borderWidth: 2,
-        borderColor: "rgba(0,0,0,0.4)"
+        borderColor: "rgba(0,0,0,0.4)",
+        marginTop: 12
     },
     bigPseudoProfilePicture: {
         width: 200,
@@ -345,7 +361,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "rgba(0,0,0,0.2)",
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginTop: 12
     },
     bigPseudoProfilePictureText: {
         fontSize: 100,
@@ -371,5 +388,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#FF6600',
         marginLeft: 8
+    },
+    gap: {
+        height: 8
     }
 });

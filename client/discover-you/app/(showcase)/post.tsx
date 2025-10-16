@@ -17,7 +17,7 @@ import Loading from "@/components/common/Loading";
 
 export default function Post() {
     const { postId } = useLocalSearchParams();
-    const {updateShowcaseTab} = useAuth();
+    const {updateShowcase} = useAuth();
 
     const [post, setPost] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export default function Post() {
                 });
         }
         loadData();
-    }, [updateShowcaseTab]);
+    }, [updateShowcase]);
 
     if(loading) {
         return <Loading/>

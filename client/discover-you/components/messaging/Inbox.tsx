@@ -3,9 +3,11 @@ import { StyleSheet, Text, View } from "react-native";
 import NotFound from "../common/NotFound";
 import { serverUrl } from "../constants";
 import MessageBox from "./MessageBox";
+import useAuth from "@/app/authContext";
 
 export default function Inbox() {
     const [messages, setMessages] = useState<any>([]);
+    const {updateMessage} = useAuth();
 
     useEffect(() => {
         function loadMessages() {
@@ -22,7 +24,7 @@ export default function Inbox() {
                 });
         }
         loadMessages();
-    }, []);
+    }, [updateMessage]);
 
     return (
         <View style={styles.container}>

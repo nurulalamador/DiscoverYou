@@ -54,10 +54,10 @@ exports.login = async (req, res) => {
             FROM users AS u
             LEFT JOIN user_interests AS ui 
             ON ui.user_id = u.id
-            WHERE u.username = ?;`,
-            [email],
+            WHERE u.email = ? OR u.username = ?
+            GROUP BY u.id;`,
+            [email, email],
             async (err, results) => {
-                console.log(results);
                 if (err) {
                     // throw err;
                     return res.status(500).json({

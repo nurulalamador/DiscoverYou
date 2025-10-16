@@ -10,7 +10,7 @@ import useAuth from "@/app/authContext";
 import { useVideoPlayer, VideoPlayer, VideoView } from "expo-video";
 
 function DoPostBox() {
-    const { user, setUpdateShowcaseTab } = useAuth();
+    const { user, setUpdateShowcase } = useAuth();
     const [formData, setFormData] = useState({
         content: "",
         category: "Web Development",
@@ -94,7 +94,7 @@ function DoPostBox() {
                 if (data.success) {
                     ToastAndroid.show(("Successfully Posted!"), ToastAndroid.SHORT);
 
-                    setUpdateShowcaseTab((old: any) => old + 1);
+                    setUpdateShowcase((old: any) => old + 1);
 
                     setFormData({
                         content: "",

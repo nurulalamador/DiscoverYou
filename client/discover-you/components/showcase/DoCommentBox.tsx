@@ -10,7 +10,7 @@ import useAuth from "@/app/authContext";
 import { useVideoPlayer, VideoPlayer, VideoView } from "expo-video";
 
 export default function DoCommentBox({ postId }: any) {
-    const { user, setUpdateShowcaseTab } = useAuth();
+    const { user, setUpdateShowcase } = useAuth();
     const [formData, setFormData] = useState({
         content: ""
     });
@@ -44,7 +44,7 @@ export default function DoCommentBox({ postId }: any) {
             .then(data => {
                 console.log("Login response data:", data);
                 if (data.success) {
-                    setUpdateShowcaseTab((old:any)=>old+1);
+                    setUpdateShowcase((old:any)=>old+1);
                     setFormData({
                         content: ""
                     });

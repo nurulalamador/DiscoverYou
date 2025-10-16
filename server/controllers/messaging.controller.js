@@ -1,5 +1,6 @@
 const connection = require('../config/database');
 const multer = require('multer');
+const { getIO, onlineUsers } = require('../socket');
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -16,14 +17,20 @@ exports.getInboxMessages = (req, res) => {
             m.content,
             m.send_at,
             m.updated_at,
-            m.is_seen,
             (m.sender_id = ?) AS sent_by_me,
             u.id AS person_id,
             u.full_name AS person_name,
             CASE 
                 WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
                 ELSE NULL
-            END AS person_profile_picture_url
+            END AS person_profile_picture_url,
+            (
+                SELECT COUNT(*)
+                FROM messages AS unseen
+                WHERE unseen.sender_id = u.id
+                  AND unseen.receiver_id = ?
+                  AND unseen.is_seen = 0
+            ) AS total_unseen
         FROM messages AS m
         INNER JOIN (
             SELECT 
@@ -45,9 +52,10 @@ exports.getInboxMessages = (req, res) => {
             ON u.id = latest.person_id
         ORDER BY m.send_at DESC;
         `,
-        [userId, userId, userId, userId, userId, userId],
+        [userId, userId, userId, userId, userId, userId, userId],
         function (err, results) {
             if (err) {
+                console.log(err);
                 return res.status(500).json({
                     success: false,
                     message: "Database error.",
@@ -90,20 +98,12 @@ exports.getSingleMessages = (req, res) => {
 
             connection.query(
                 `
-                SELECT 
-                    m.id,
-                    m.content,
-                    m.send_at,
-                    m.is_seen,
-                    (m.sender_id = ?) AS sent_by_me
-                FROM messages AS m
-                WHERE 
-                    (m.sender_id = ? AND m.receiver_id = ?)
-                    OR (m.sender_id = ? AND m.receiver_id = ?)
-                ORDER BY m.send_at ASC;
+                UPDATE messages
+                SET is_seen = 1
+                WHERE sender_id = ? AND receiver_id = ? AND is_seen = 0;
                 `,
-                [userId, userId, personId, personId, userId],
-                function (err, messageResults) {
+                [personId, userId],
+                function (err, results) {
                     if (err) {
                         return res.status(500).json({
                             success: false,
@@ -112,11 +112,37 @@ exports.getSingleMessages = (req, res) => {
                         });
                     }
 
-                    res.status(200).json({
-                        success: true,
-                        person: personResults[0],
-                        messages: messageResults
-                    });
+                    connection.query(
+                        `
+                        SELECT 
+                            m.id,
+                            m.content,
+                            m.send_at,
+                            m.is_seen,
+                            (m.sender_id = ?) AS sent_by_me
+                        FROM messages AS m
+                        WHERE 
+                            (m.sender_id = ? AND m.receiver_id = ?)
+                            OR (m.sender_id = ? AND m.receiver_id = ?)
+                        ORDER BY m.send_at ASC;
+                        `,
+                        [userId, userId, personId, personId, userId],
+                        function (err, messageResults) {
+                            if (err) {
+                                return res.status(500).json({
+                                    success: false,
+                                    message: "Database error.",
+                                    error: err
+                                });
+                            }
+
+                            res.status(200).json({
+                                success: true,
+                                person: personResults[0],
+                                messages: messageResults
+                            });
+                        }
+                    );
                 }
             );
         }
@@ -127,6 +153,8 @@ exports.getSingleMessages = (req, res) => {
 exports.sendMessage = (req, res) => {
     const { receiverId, content } = req.body;
     const senderId = req.userId;
+
+    const io = getIO();
 
     if (!receiverId || !content) {
         return res.status(400).json({
@@ -149,11 +177,33 @@ exports.sendMessage = (req, res) => {
                     error: err
                 });
             }
-            res.status(201).json({
-                success: true,
-                message: "Message sent successfully.",
-                messageId: result.insertId
-            });
+
+            // Get sender name
+            connection.query(
+                `SELECT full_name FROM users WHERE id = ?`,
+                [senderId],
+                function (err, userResults) {
+                    const senderName = userResults && userResults[0] ? userResults[0].full_name : null;
+
+                    const receiverSocketId = onlineUsers?.get(Number(receiverId));
+                    
+                    if (receiverSocketId) {
+                        io.to(receiverSocketId).emit("receive_message", {
+                            senderId,
+                            receiverId,
+                            content,
+                            senderName,
+                            messageId: result.insertId
+                        });
+                    }
+
+                    res.status(201).json({
+                        success: true,
+                        message: "Message sent successfully.",
+                        messageId: result.insertId
+                    });
+                }
+            );
         }
     );
 }

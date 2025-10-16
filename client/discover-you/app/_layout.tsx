@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, StatusBar } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import useAuth, { AuthProvider } from "./authContext";
 import { serverUrl } from "../components/constants";
@@ -58,6 +58,11 @@ function RootLayoutInner() {
 
   return (
     <SafeAreaProvider>
+      <StatusBar 
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent={true}
+      />
       <SafeAreaView style={{ flex: 1 }}>
         {isAuthenticated ? (
           <Stack screenOptions={{ headerShown: false }}>
@@ -66,7 +71,6 @@ function RootLayoutInner() {
         ) : (
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(course)" />
           </Stack>
         )}
       </SafeAreaView>

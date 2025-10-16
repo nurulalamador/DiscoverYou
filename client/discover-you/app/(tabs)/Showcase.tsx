@@ -10,9 +10,9 @@ export default function Showcase() {
   return (
     <ScrollView>
       <View style={styles.gap}></View>
-      <DoPostBox setUpdatePosts={setUpdatePosts}/>
+      <DoPostBox/>
       <FilterBox sort={["Newest First", "Most Liked"]}/>
-      <ForYouPosts updatePosts={updatePosts}/>
+      <ForYouPosts/>
       <View style={styles.gap}></View>
     </ScrollView>
   );

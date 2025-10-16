@@ -28,12 +28,17 @@ export default function MessageBox({ message }: { message: any }) {
             }
             <View style={styles.messageContent}>
                 <Text style={styles.personName}>{message.person_name}</Text>
-                <Text style={styles.messageText} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={message.total_unseen > 0 ? styles.unseenMessageText : styles.messageText} numberOfLines={1} ellipsizeMode="tail">
                     <Text style={{fontWeight: 600}}>{message.sent_by_me ? "You: " : ""}</Text>
                     {message.content}
                 </Text>
             </View>
-            <View>
+            <View style={styles.timeAgoContainer}>
+                {
+                    message.total_unseen ?
+                    <Text style={styles.totalUnseen}>{message.total_unseen}</Text>
+                    : <></>
+                }
                 <Text style={styles.timeAgo}>{timeAgo(message.send_at)}</Text>
             </View>
         </TouchableOpacity>
@@ -42,9 +47,10 @@ export default function MessageBox({ message }: { message: any }) {
 
 const styles = StyleSheet.create({
     messageBox: {
-        margin: 8,
+        padding: 8,
+        borderRadius: 8,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     profilePicture: {
         width: 48,
@@ -81,9 +87,31 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 2
     },
+    unseenMessageText: {
+        color: 'rgba(0,0,0,0.8)',
+        fontSize: 14,
+        marginTop: 2,
+        fontWeight: "bold"
+    },
     timeAgo: {
-        fontSize: 12,
+        fontSize: 13,
         color: 'rgba(0,0,0,0.4)',
-        margin: 4
+        marginHorizontal: 4
+    },
+    timeAgoContainer: {
+        alignItems: "flex-end"
+    },
+    totalUnseen: {
+        backgroundColor: "#FF6600",
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        fontSize: 12,
+        color: "#FFFFFF",
+        fontWeight: "bold",
+        marginHorizontal: 4,
+        marginBottom: 4
     }
 });

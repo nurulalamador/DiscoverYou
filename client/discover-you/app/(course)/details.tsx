@@ -12,7 +12,7 @@ import Loading from "@/components/common/Loading";
 
 export default function Details() {
     const { courseId } = useLocalSearchParams();
-    const { updateCourseTab, setUpdateCourseTab } = useAuth();
+    const { updateCourse, setUpdateCourse } = useAuth();
     const [course, setCourse] = useState<any>();
     const [materials, setMaterials] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ export default function Details() {
                 if (data.success) {
                     if (data.success ) {
                         setIsEnrolled(true);
-                        setUpdateCourseTab((old:any)=>old+1);
+                        setUpdateCourse((old:any)=>old+1);
                     }
                 }
                 else {
@@ -71,7 +71,7 @@ export default function Details() {
                 });
         }
         loadData();
-    }, [updateCourseTab]);
+    }, [updateCourse]);
 
     if(loading) {
         return <Loading/>

@@ -215,3 +215,42 @@ exports.addUserInterests = (req, res) => {
         }
     );
 };
+exports.getInitialData = (req, res) => {
+    const userId = req.userId;
+
+    connection.query(
+        `SELECT COUNT(*) AS total_unseen_messages
+        FROM messages m
+        WHERE m.receiver_id = ? AND m.is_seen = 0`,
+        [userId],
+        function (err, unseenMessageResults) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error.",
+                    error: err
+                });
+            }
+            connection.query(
+                `SELECT COUNT(*) AS total_unseen_notifications
+                FROM notifications n
+                WHERE n.receiver_id = ? AND n.is_seen = 0`,
+                [userId],
+                function (err, unseenNotificationResults) {
+                    if (err) {
+                        return res.status(500).json({
+                            success: false,
+                            message: "Database error.",
+                            error: err
+                        });
+                    }
+                    res.status(200).json({
+                        success: true,
+                        total_unseen_messages: unseenMessageResults[0].total_unseen_messages,
+                        total_unseen_notifications: unseenNotificationResults[0].total_unseen_notifications
+                    });
+                }
+            );
+        }
+    );
+}

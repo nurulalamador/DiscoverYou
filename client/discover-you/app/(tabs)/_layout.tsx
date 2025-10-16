@@ -1,15 +1,32 @@
 import { Tabs, useRouter } from "expo-router";
-import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, ToastAndroid } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, ToastAndroid, Alert, LogBox } from "react-native";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { use, useEffect, useState } from "react";
+import * as Notifications from 'expo-notifications';
 import { categories, getCategoryIcon, serverUrl } from "@/components/constants";
 import useAuth from "../authContext";
+import { io } from "socket.io-client";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+LogBox.ignoreLogs(['expo-notifications: Android Push notifications']);
 
 export default function TabsLayout() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, updateMessage, setUpdateMessage } = useAuth();
   const router = useRouter();
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
+  const [unseenMessages, setUnseenMessages] = useState(0);
+  const [unseenNotifications, setUnseenNotifications] = useState(0);
+
+
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
   // Categories not selected yet
@@ -43,7 +60,6 @@ export default function TabsLayout() {
     })
       .then(res => res.json())
       .then(data => {
-        console.log(data);
         if (data.success) {
           setShowCategoryModal(false);
           setUser((oldData: any) => ({
@@ -62,10 +78,72 @@ export default function TabsLayout() {
       });
   }
 
+  const socket = io(serverUrl);
+
+
   useEffect(() => {
     if (user.interests.length == 0) {
       setShowCategoryModal(true);
     }
+
+    requestPermissions();
+
+    // requestNotificationPermission();
+  }, []);
+
+  async function requestPermissions() {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please enable notifications');
+    }
+  }
+
+  async function sendNotification(title: string, body: string) {
+    console.log("Scheduling immediate notification...");
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: title,
+        body: body,
+      },
+      trigger: null,
+    });
+  }
+
+  useEffect(() => {
+    function loadData() {
+      fetch(`${serverUrl}/profile/initialData`, {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(res => res.json())
+        .then(data => {
+          setUnseenMessages(data.total_unseen_messages || 0);
+          setUnseenNotifications(data.total_unseen_notifications || 0);
+        })
+        .catch(function (err) {
+          console.log("Initial data fetching failed:", err);
+        });
+    }
+    loadData();
+  }, [updateMessage]);
+
+  useEffect(() => {
+    // Register user on socket connection
+    socket.emit("register", user.id);
+
+    // Listen for incoming messages
+    socket.on("receive_message", (data) => {
+      sendNotification(data.senderName, data.content);
+      setUpdateMessage((prev: any) => prev + 1);
+    });
+
+    socket.on("register_request", (data) => {
+      socket.emit("register", user.id);
+    });
+
+    return () => {
+      socket.off("receive_message");
+    };
   }, []);
 
   return (
@@ -132,9 +210,15 @@ export default function TabsLayout() {
                   <FontAwesome6 name="magnifying-glass" size={20} color="rgba(0,0,0,0.6)" solid />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() => router.push("/(message)/messages")}>
+                  {
+                    unseenMessages > 0 ? <Text style={styles.unseenBox}>{unseenMessages}</Text> : <></>
+                  }
                   <FontAwesome6 name="comment" size={20} color="rgba(0,0,0,0.6)" solid />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
+                  {
+                    unseenNotifications > 0 ? <Text style={styles.unseenBox}>{unseenNotifications}</Text> : <></>
+                  }
                   <FontAwesome6 name="bell" size={20} color="rgba(0,0,0,0.6)" solid />
                 </TouchableOpacity>
               </View>
@@ -276,6 +360,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
+    position: "relative"
   },
   activeIndicator: {
     width: 50,
@@ -285,6 +370,23 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
     position: "absolute",
     top: -14, // adjust to match your tab bar height
+  },
+  unseenBox: {
+    backgroundColor: "#FF6600",
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 11,
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    marginHorizontal: 4,
+    marginBottom: 4,
+    position: "absolute",
+    top: -6,
+    right: -6,
+    zIndex: 10
   },
   modalOverlay: {
     flex: 1,

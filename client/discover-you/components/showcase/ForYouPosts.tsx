@@ -7,7 +7,7 @@ import Loading from "../common/Loading";
 
 export default function ForYouPosts() {
     const [posts, setPosts] = useState<any[]>([]);
-    const {updateShowcaseTab} = useAuth();
+    const {updateShowcase} = useAuth();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export default function ForYouPosts() {
                 });
         }
         loadData();
-    }, [updateShowcaseTab]);
+    }, [updateShowcase]);
 
     if(loading) {
         return <Loading/>
