@@ -5,7 +5,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import CountdownTimer from "../common/Countdown";
 
-function ExploreContestBox({ contest, ongoing }: any) {
+function ContestBox({ contest }: any) {
     const router = useRouter();
 
     return (
@@ -47,25 +47,12 @@ function ExploreContestBox({ contest, ongoing }: any) {
                     </View>
                 </View>
             </View>
-            {
-                (ongoing == true) ?
-                    <View style={styles.countdownBox}>
-                        <Text style={styles.countdownBoxText}>Ending in</Text>
-                        <CountdownTimer initialSeconds={contest.ending_in} style={styles.countdownBoxCount} />
-                    </View>
-                    :
-                    <View style={styles.countdownBox}>
-                        <Text style={styles.countdownBoxText}>Starting in</Text>
-                        <CountdownTimer initialSeconds={contest.starting_in} style={styles.countdownBoxCount} />
-                    </View>
-            }
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     contestBox: {
-        width: 300,
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         margin: 6,
@@ -177,4 +164,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ExploreContestBox;
+export default ContestBox;

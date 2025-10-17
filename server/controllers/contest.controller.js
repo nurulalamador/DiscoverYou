@@ -42,3 +42,163 @@ exports.getAllContest = (req, res) => {
         });
     });
 };
+
+
+exports.getPreviousContest = (req, res) => {
+    const now = new Date();
+    const previousQuery = `
+        SELECT contests.*, 
+            TIMESTAMPDIFF(SECOND, ?, contests.ending_time) AS ending_in,
+            users.full_name AS organizer_name,
+            CASE 
+                WHEN users.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', users.id)
+                ELSE NULL
+            END AS organizer_profile_picture_url
+        FROM contests
+        JOIN users ON users.id = contests.organizer_id
+        WHERE contests.ending_time < ?
+    `;
+
+    connection.query(previousQuery, [now, now], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error', details: err });
+        }
+        res.json({
+            success: true,
+            contests: results,
+        });
+    });
+};
+
+
+exports.getSingleContest = (req, res) => {
+    const userId = req.userId; // Retrieved from verifyToken middleware
+    const contestId = req.params.id;
+
+    const now = new Date();
+    const contestQuery = `
+        SELECT contests.*, 
+            TIMESTAMPDIFF(SECOND, NOW(), contests.ending_time) AS ending_in,
+            TIMESTAMPDIFF(SECOND, NOW(), contests.start_time) AS starting_in,
+            users.full_name AS organizer_name,
+            CASE 
+                WHEN users.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', users.id)
+                ELSE NULL
+            END AS organizer_profile_picture_url,
+            CASE
+                WHEN contests.start_time <= NOW() AND contests.ending_time >= NOW() THEN 'ongoing'
+                WHEN contests.start_time > NOW() THEN 'upcoming'
+                ELSE 'previous'
+            END AS type,
+            (SELECT COUNT(*) FROM contest_participants wp WHERE wp.contest_id = contests.id) AS total_participants,
+            (SELECT EXISTS(
+                SELECT 1 FROM contest_participants wp2 
+                WHERE wp2.contest_id = contests.id AND wp2.participant_id = ?
+            )) AS is_participated
+        FROM contests
+        JOIN users ON users.id = contests.organizer_id
+        WHERE contests.id = ?
+    `;
+
+    const participantsQuery = `
+        SELECT users.id, users.full_name, users.points,
+            CASE 
+                WHEN users.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', users.id)
+                ELSE NULL
+            END AS profile_picture_url
+        FROM contest_participants wp
+        JOIN users ON users.id = wp.participant_id
+        WHERE wp.contest_id = ?
+    `;
+
+    connection.query(contestQuery, [userId, contestId], (err, contestResults) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error', details: err });
+        }
+        if (contestResults.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Contest not found'
+            });
+        }
+
+        connection.query(participantsQuery, [contestId], (err2, participantResults) => {
+            if (err2) {
+                return res.status(500).json({ error: 'Database error', details: err2 });
+            }
+
+            console.log(contestResults[0]);
+
+            res.json({
+                success: true,
+                contest: contestResults[0],
+                participants: participantResults
+            });
+        });
+    });
+};
+
+
+exports.toggleRegister = (req, res) => {
+    const userId = req.userId;        // reactor_id
+    const { contestId } = req.body;      // post_id sent from frontend
+
+
+    const checkQuery = `
+        SELECT 1 
+        FROM contest_participants 
+        WHERE contest_id = ? AND participant_id = ?;
+    `;
+
+    connection.query(checkQuery, [contestId, userId], (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: "Database error.",
+                error: err
+            });
+        }
+
+        if (results.length > 0) {
+            // Reaction exists → delete it
+            const deleteQuery = `
+                DELETE FROM contest_participants 
+                WHERE contest_id = ? AND participant_id = ?
+            `;
+            connection.query(deleteQuery, [contestId, userId], (err2) => {
+                if (err2) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "Database error.",
+                        error: err2
+                    });
+                }
+
+                res.status(200).json({
+                    success: true,
+                    message: "unregistered"
+                });
+            });
+        } else {
+            // Reaction does not exist → insert it
+            const insertQuery = `
+                INSERT INTO contest_participants (contest_id, participant_id) 
+                VALUES (?, ?)
+            `;
+            connection.query(insertQuery, [contestId, userId], (err3) => {
+                if (err3) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "Database error.",
+                        error: err3
+                    });
+                }
+
+                res.status(200).json({
+                    success: true,
+                    message: "registered"
+                });
+            });
+        }
+    });
+};

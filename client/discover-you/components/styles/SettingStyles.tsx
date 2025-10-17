@@ -45,7 +45,7 @@ const SettingStyles = StyleSheet.create({
     menuItemIconRed: {
         fontSize: 18,
         color: "rgba(250,0,0,0.6)",
-        width: 30,
+        width: 24,
         textAlign: "center",
         marginRight: 12
     },

@@ -4,8 +4,10 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { serverUrl } from "../constants";
 import ExploreContestBox from "../contest/ExploreContestBox";
 import Loading from "../common/Loading";
+import { useRouter } from "expo-router";
 
 export default function Contest() {
+    const router = useRouter();
     const [ongoingContests, setOngoingContests] = useState<any[]>([]);
     const [upcomingContests, setUpcomingContests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -61,7 +63,9 @@ export default function Contest() {
                 }
             </ScrollView>
             <View style={styles.divider} />
-            <TouchableOpacity style={styles.allButton} onPress={() => { }}>
+            <TouchableOpacity style={styles.allButton} onPress={() => {
+                router.push('/(contest)/previous');
+             }}>
                 <Text style={styles.allButtonText}>See Previous Contests</Text>
                 <FontAwesome6 name="arrow-right" style={styles.allButtonIcon} />
             </TouchableOpacity>

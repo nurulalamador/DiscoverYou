@@ -79,6 +79,14 @@ export default function Others() {
         <View style={styles.divider}></View>
         <TouchableOpacity
           style={styles.menuItem}
+          onPress={() => router.push("/(setting)/settings")}
+        >
+          <FontAwesome6 name="list-ol" style={styles.menuItemIcon} />
+          <Text style={styles.menuItemText}>Leaderboard</Text>
+        </TouchableOpacity>
+        <View style={styles.divider}></View>
+        <TouchableOpacity
+          style={styles.menuItem}
           onPress={handleLogout}
         >
           <FontAwesome6 name="right-from-bracket" style={styles.menuItemIcon} />

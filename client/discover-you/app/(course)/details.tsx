@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 13,
         margin: 8,
-        marginHorizontal: 8,
+        marginHorizontal: 10,
         textAlign: 'justify',
         color: "rgba(0,0,0,0.6)"
     },
