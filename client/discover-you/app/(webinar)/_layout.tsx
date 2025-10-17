@@ -1,10 +1,9 @@
 import { Stack } from "expo-router";
 
-export default function HiringLayout() {
+export default function WebinarLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="details" />
-      <Stack.Screen name="pending" />
     </Stack>
   );
 }

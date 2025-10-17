@@ -4,9 +4,11 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { serverUrl } from "../constants";
 import ExploreWebinarBox from "../webinar/ExploreWebinarBox";
 import Loading from "../common/Loading";
+import { useRouter } from "expo-router";
 
 
 export default function Webinar() {
+    const router = useRouter();
     const [ongoingWebinars, setOngoingWebinars] = useState<any[]>([]);
     const [upcomingWebinars, setUpcomingWebinars] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -62,7 +64,9 @@ export default function Webinar() {
                 }
             </ScrollView>
             <View style={styles.divider} />
-            <TouchableOpacity style={styles.allButton} onPress={() => { }}>
+            <TouchableOpacity style={styles.allButton} onPress={() => {
+                router.push('/(webinar)/previous');
+             }}>
                 <Text style={styles.allButtonText}>See Previous Webinars</Text>
                 <FontAwesome6 name="arrow-right" style={styles.allButtonIcon} />
             </TouchableOpacity>

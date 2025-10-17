@@ -5,7 +5,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import CountdownTimer from "../common/Countdown";
 
-function ExploreWebinarBox({ webinar, ongoing }: any) {
+function WebinarBox({ webinar, ongoing }: any) {
     const router = useRouter();
 
     return (
@@ -47,25 +47,12 @@ function ExploreWebinarBox({ webinar, ongoing }: any) {
                     </View>
                 </View>
             </View>
-            {
-                (ongoing == true) ?
-                    <View style={styles.countdownBox}>
-                        <Text style={styles.countdownBoxText}>Ending in</Text>
-                        <CountdownTimer initialSeconds={webinar.ending_in} style={styles.countdownBoxCount} />
-                    </View>
-                    :
-                    <View style={styles.countdownBox}>
-                        <Text style={styles.countdownBoxText}>Starting in</Text>
-                        <CountdownTimer initialSeconds={webinar.starting_in} style={styles.countdownBoxCount} />
-                    </View>
-            }
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     webinarBox: {
-        width: 300,
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         margin: 6,
@@ -177,4 +164,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ExploreWebinarBox;
+export default WebinarBox;

@@ -51,6 +51,40 @@ function formatDate(dateString) {
     return `${day}/${month}/${year}`;
 }
 
+function formatDateTime(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (isNaN(date)) return "";
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const period = hours >= 12 ? "PM" : "AM";
+    let hour12 = hours % 12;
+    if (hour12 === 0) hour12 = 12;
+
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hour12}:${minutes} ${period}`;
+}
+
+function formatTime(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    if (isNaN(date)) return "";
+
+    let hours = date.getHours();
+    const period = hours >= 12 ? "PM" : "AM";
+    let hour12 = hours % 12;
+    if (hour12 === 0) hour12 = 12;
+
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${hour12}:${minutes} ${period}`;
+}
+
 function formatDuration(seconds) {
     if (!seconds) return "0:00";
     const mins = Math.floor(seconds / 60);
@@ -89,4 +123,4 @@ function getCategoryIcon(category) {
     }
 }
 
-export { serverUrl, getCategoryIcon, categories, formatDuration, timeAgo, formatDate };
+export { serverUrl, getCategoryIcon, categories, formatDuration, timeAgo, formatDate, formatDateTime, formatTime};
