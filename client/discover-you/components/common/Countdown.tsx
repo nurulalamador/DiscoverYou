@@ -26,7 +26,7 @@ const CountdownTimer = ({ initialSeconds, style } : any) => {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    return `${days ? days+"d " : ""}${hours ? hours+"h " : ""}${minutes ? minutes+"h " : ""}${seconds ? seconds+"h " : ""}`;
+    return `${days ? days+"d " : ""}${hours ? hours+"h " : ""}${minutes ? minutes+"m " : ""}${seconds ? seconds+"s " : ""}`;
   };
 
   return <Text style={style}>{formatTime(secondsLeft)}</Text>;

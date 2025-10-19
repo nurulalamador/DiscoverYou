@@ -125,8 +125,6 @@ exports.getSingleWebinar = (req, res) => {
                 return res.status(500).json({ error: 'Database error', details: err2 });
             }
 
-            console.log(webinarResults[0]);
-
             res.json({
                 success: true,
                 webinar: webinarResults[0],

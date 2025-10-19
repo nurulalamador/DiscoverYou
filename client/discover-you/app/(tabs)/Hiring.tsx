@@ -1,4 +1,5 @@
 import FilterBox from "@/components/common/FilterBox";
+import Loading from "@/components/common/Loading";
 import { serverUrl } from "@/components/constants";
 import JobBox from "@/components/hiring/JobBox";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -34,6 +35,12 @@ export default function Hiring() {
     loadData();
   }, []);
 
+  if (loading) {
+    return (
+      <Loading/>
+    )
+  }
+  
   return (
     <ScrollView>
       {

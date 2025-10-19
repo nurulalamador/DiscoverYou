@@ -1,5 +1,5 @@
 const serverUrl = 'http://192.168.10.100:8000';
-// const serverUrl = 'http://10.15.19.40:8000';
+// const serverUrl = 'http://10.15.25.4:8000';
 
 const categories = [
     "Music and Singing",
@@ -13,7 +13,8 @@ const categories = [
     "App Development",
     "Arts and Crafts",
     "Debating",
-    "Cooking"
+    "Cooking",
+    "Photography"
 ];
 
 function timeAgo(isoDate) {
@@ -118,6 +119,8 @@ function getCategoryIcon(category) {
             return "robot"; break;
         case "Cooking":
             return "utensils"; break;
+        case "Photography":
+            return "camera"; break;
         default:
             return "star"; break;
     }

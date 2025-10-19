@@ -4,6 +4,8 @@ export default function CourseLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="profile" />
+      <Stack.Screen name="leaderboard" />
+      <Stack.Screen name="notification" />
     </Stack>
   );
 }

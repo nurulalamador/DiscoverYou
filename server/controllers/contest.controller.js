@@ -1,4 +1,5 @@
 const connection = require('../config/database'); // your MySQL connection
+const multer = require('multer');
 
 exports.getAllContest = (req, res) => {
     const now = new Date();
@@ -95,6 +96,11 @@ exports.getSingleContest = (req, res) => {
                 SELECT 1 FROM contest_participants wp2 
                 WHERE wp2.contest_id = contests.id AND wp2.participant_id = ?
             )) AS is_participated
+            ,
+            (SELECT EXISTS(
+                SELECT 1 FROM contest_submissions cs
+                WHERE cs.contest_id = contests.id AND cs.participant_id = ?
+            )) AS is_submitted
         FROM contests
         JOIN users ON users.id = contests.organizer_id
         WHERE contests.id = ?
@@ -109,9 +115,10 @@ exports.getSingleContest = (req, res) => {
         FROM contest_participants wp
         JOIN users ON users.id = wp.participant_id
         WHERE wp.contest_id = ?
+        ORDER BY wp.score DESC
     `;
 
-    connection.query(contestQuery, [userId, contestId], (err, contestResults) => {
+    connection.query(contestQuery, [userId, userId, contestId], (err, contestResults) => {
         if (err) {
             return res.status(500).json({ error: 'Database error', details: err });
         }
@@ -126,8 +133,6 @@ exports.getSingleContest = (req, res) => {
             if (err2) {
                 return res.status(500).json({ error: 'Database error', details: err2 });
             }
-
-            console.log(contestResults[0]);
 
             res.json({
                 success: true,
@@ -202,3 +207,43 @@ exports.toggleRegister = (req, res) => {
         }
     });
 };
+
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10 MB limit (adjust as needed)
+});
+
+exports.uploadContestMedia = [
+    upload.single('media'), // expect field name "media"
+    (req, res) => {
+        const participantId = req.userId; // from verifyToken middleware
+        const contestId = req.body.contestId || req.body.contest_id;
+
+        if (!contestId) {
+            return res.status(400).json({ success: false, message: 'contestId is required' });
+        }
+        if (!req.file || !req.file.buffer) {
+            return res.status(400).json({ success: false, message: 'media file is required' });
+        }
+
+        const mediaType = req.file.mimetype;
+        const mediaBlob = req.file.buffer;
+
+        const insertQuery = `
+            INSERT INTO contest_submissions (contest_id, participant_id, media_type, media_blob)
+            VALUES (?, ?, ?, ?)
+        `;
+
+        connection.query(insertQuery, [contestId, participantId, mediaType, mediaBlob], (err, result) => {
+            if (err) {
+                return res.status(500).json({ success: false, message: 'Database error', error: err });
+            }
+            res.status(200).json({
+                success: true,
+                message: 'Media uploaded',
+                submissionId: result.insertId
+            });
+        });
+    }
+];

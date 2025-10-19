@@ -66,8 +66,6 @@ export default function TabsLayout() {
             ...oldData,
             interests: selected
           }));
-
-          console.log(user);
         }
       })
       .catch(function (err) {
@@ -99,7 +97,6 @@ export default function TabsLayout() {
   }
 
   async function sendNotification(title: string, body: string) {
-    console.log("Scheduling immediate notification...");
     await Notifications.scheduleNotificationAsync({
       content: {
         title: title,
@@ -206,7 +203,11 @@ export default function TabsLayout() {
             <View style={route.name == "Event" ? styles.header : [styles.header, styles.headerBorder]}>
               <Text style={styles.title}>{getTitle(route.name)}</Text>
               <View style={styles.icons}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton}
+                  onPress={()=>{
+                    router.push("/(other)/search")
+                  }}
+                >
                   <FontAwesome6 name="magnifying-glass" size={20} color="rgba(0,0,0,0.6)" solid />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() => router.push("/(message)/messages")}>
@@ -215,7 +216,9 @@ export default function TabsLayout() {
                   }
                   <FontAwesome6 name="comment" size={20} color="rgba(0,0,0,0.6)" solid />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={() => {}}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => {
+                  router.push("/(other)/notification");
+                }}>
                   {
                     unseenNotifications > 0 ? <Text style={styles.unseenBox}>{unseenNotifications}</Text> : <></>
                   }

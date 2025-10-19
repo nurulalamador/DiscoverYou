@@ -79,7 +79,7 @@ export default function Others() {
         <View style={styles.divider}></View>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => router.push("/(setting)/settings")}
+          onPress={() => router.push("/(other)/leaderboard")}
         >
           <FontAwesome6 name="list-ol" style={styles.menuItemIcon} />
           <Text style={styles.menuItemText}>Leaderboard</Text>

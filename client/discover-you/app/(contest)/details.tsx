@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, PanResponder, TouchableOpacity, ScrollView, Alert, Linking } from "react-native";
+import { View, Text, StyleSheet, Pressable, PanResponder, TouchableOpacity, ScrollView, Alert, Linking, ToastAndroid } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { Image } from "expo-image";
@@ -6,10 +6,13 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { formatDate, formatTime, getCategoryIcon, serverUrl } from "@/components/constants";
 import NotFound from "@/components/common/NotFound";
 import Header from "@/components/common/Header";
-import useAuth from "../authContext";
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from "expo-image-picker";
 import Loading from "@/components/common/Loading";
 import CountdownTimer from "@/components/common/Countdown";
 import ParticipantBox from "@/components/webinar/ParticipantBox";
+import AudioPlayer from "@/components/common/AudioPlayer";
+import { useVideoPlayer, VideoView } from "expo-video";
 
 export default function Details() {
     const { contestId } = useLocalSearchParams();
@@ -19,6 +22,8 @@ export default function Details() {
     const [isReady, setIsReady] = useState(true);
     const [totalParticipants, setTotalParticipants] = useState<number>(0);
     const [participants, setParticipants] = useState<any[]>([]);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [submissionMedia, setSubmissionMedia] = useState<any>();
 
     const router = useRouter();
 
@@ -61,14 +66,106 @@ export default function Details() {
             });
     }
 
+
+    // Pick image
+    async function pickImage() {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: false,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setSubmissionMedia({ type: "image", uri: result.assets[0].uri, duration: null });
+        }
+    }
+
+    // Pick video
+    async function pickVideo() {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['videos'],
+        });
+
+        if (!result.canceled) {
+            setSubmissionMedia({
+                type: "video",
+                uri: result.assets[0].uri,
+                duration: result.assets[0].duration ? Math.round(result.assets[0].duration / 1000) : 0
+            });
+        }
+    }
+
+    async function pickAudio() {
+        let result = await DocumentPicker.getDocumentAsync({
+            type: 'audio/*',
+            copyToCacheDirectory: true
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+
+            setSubmissionMedia({
+                type: "audio",
+                uri: result.assets[0].uri,
+                duration: null,
+                // name: result.assets[0].name,
+                // mimeType: result.assets[0].mimeType,
+                // size: result.assets[0].size
+            });
+        }
+    }
+
+
     function addSubmission() {
         if (isRegistered) {
+            if (!submissionMedia) {
+                ToastAndroid.show('Please upload something to add submission!', ToastAndroid.SHORT);
+            }
+            else {
 
+                const form = new FormData();
+                form.append("contestId", contestId as string);
+                form.append("mediaType", submissionMedia.type);
+
+                form.append("media", {
+                    uri: submissionMedia.uri,
+                    name: `file.${submissionMedia.type === "image" ? "jpg" : submissionMedia.type === "video" ? "mp4" : "m4a"}`,
+                    type: submissionMedia.type === "image" ? "image/jpeg" :
+                        submissionMedia.type === "video" ? "video/mp4" : "audio/m4a"
+                } as any);
+
+                fetch(`${serverUrl}/contest/uploadSubmission`, {
+                    method: "POST",
+                    credentials: "include",
+                    body: form
+                })
+                    .then(response => {
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Login response data:", data);
+                        if (data.success) {
+                            ToastAndroid.show(("Successfully Submitted!"), ToastAndroid.SHORT);
+                            setSubmissionMedia(null);
+                            setIsSubmitted(true);
+                        }
+                        else {
+                            ToastAndroid.show((data.message || "Something went wrong."), ToastAndroid.SHORT);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Login error:", error);
+                        ToastAndroid.show(("Something went wrong. Please try again."), ToastAndroid.SHORT);
+                    });
+            }
         }
         else {
             Alert.alert("Not Registered", "You are not registered for this contest.");
         }
     }
+
+
+
+
 
     useEffect(() => {
         function loadData() {
@@ -82,6 +179,7 @@ export default function Details() {
                     setParticipants(data.participants);
                     setTotalParticipants(Number(data.contest.total_participants));
                     setIsRegistered(Boolean(data.contest.is_participated));
+                    setIsSubmitted(Boolean(data.contest.is_submitted));
                 })
                 .catch(function (err) {
                     console.log("Contest data fetching failed:", err);
@@ -212,24 +310,96 @@ export default function Details() {
                     <View style={styles.contentBox}>
                         <Text style={styles.sectionTitle}>Submission</Text>
                         <View style={styles.divider} />
-                        <NotFound title="No Submission Added" icon="photo-film" />
 
-                        <TouchableOpacity
-                            style={isRegistered ? styles.submissionButton : [styles.submissionButton, { opacity: 0.6 }]}
-                            onPress={addSubmission}
-                        >
-                            <Text style={styles.submissionButtonText}>Add Submission</Text>
-                        </TouchableOpacity>
+                        {
+                            isSubmitted ? <View style={styles.successContainer}>
+                                <FontAwesome6 name="circle-check" size={120} color="#4BB543" solid />
+                                <Text style={styles.successTitle}>Submission Completed!</Text>
+                                <Text style={styles.successSemiTitle}>You will be notified when result will published</Text>
+                            </View> :
+                                <View>
+                                    {
+                                        submissionMedia ?
+                                            <View style={styles.mediaContainer}>
+                                                {
+                                                    submissionMedia.type === "image" ? (
+                                                        <Image
+                                                            source={{ uri: submissionMedia.uri }}
+                                                            style={styles.postImage}
+                                                            contentFit="contain"
+                                                        />
+                                                    ) : submissionMedia.type === "video" ? (
+                                                        <VideoView
+                                                            style={styles.postVideo}
+                                                            player={useVideoPlayer(submissionMedia.uri, player => {
+                                                                player.loop = false;
+                                                                player.play();
+                                                            })}
+                                                            fullscreenOptions={
+                                                                {
+                                                                    enable: true,
+                                                                    orientation: 'landscape'
+                                                                }
+                                                            }
+                                                            allowsPictureInPicture
+                                                            nativeControls
+                                                        />
+                                                    ) : submissionMedia.type === "audio" ? (
+                                                        <AudioPlayer uri={submissionMedia.uri} />
+                                                    ) : <></>
+                                                }
+                                            </View>
+                                            :
+                                            <NotFound title="No Submission Added" icon="photo-film" />
+                                    }
+                                    {
+                                        (
+                                            contest.category == "Photography" ||
+                                            contest.category == "Graphics Designing" ||
+                                            contest.category == "Arts and Crafts"
+                                        ) ? <TouchableOpacity style={styles.imageUploadButton} onPress={pickImage}>
+                                            <FontAwesome6 name="image" style={styles.imageUploadButtonIcon} />
+                                            <Text style={styles.imageUploadButtonText}>{submissionMedia ? "Change" : "Upload"} Image</Text>
+                                        </TouchableOpacity> :
+                                            (contest.category == "Dancing") ? <TouchableOpacity style={styles.imageUploadButton} onPress={pickVideo}>
+                                                <FontAwesome6 name="video" style={styles.imageUploadButtonIcon} />
+                                                <Text style={styles.imageUploadButtonText}>{submissionMedia ? "Change" : "Upload"} Video</Text>
+                                            </TouchableOpacity> :
+                                                (contest.category == "Music and Singing") ? <TouchableOpacity style={styles.imageUploadButton} onPress={pickAudio}>
+                                                    <FontAwesome6 name="microphone" style={styles.imageUploadButtonIcon} />
+                                                    <Text style={styles.imageUploadButtonText}>{submissionMedia ? "Change" : "Upload"} Audio</Text>
+                                                </TouchableOpacity> :
+                                                    (
+                                                        contest.category == "App Development" ||
+                                                        contest.category == "Web Development" ||
+                                                        contest.category == "Competitive Programming"
+                                                    ) ? <TouchableOpacity style={styles.imageUploadButton}>
+                                                        <FontAwesome6 name="terminal" style={styles.imageUploadButtonIcon} />
+                                                        <Text style={styles.imageUploadButtonText}>Go To Code Editor</Text>
+                                                    </TouchableOpacity>
+                                                        : <></>
+                                    }
+
+                                    <TouchableOpacity
+                                        style={isRegistered ? styles.submissionButton : [styles.submissionButton, { opacity: 0.6 }]}
+                                        onPress={addSubmission}
+                                    >
+                                        <Text style={styles.submissionButtonText}>Add Submission</Text>
+                                    </TouchableOpacity>
+                                </View>
+                        }
                     </View>
                 }
                 <View style={styles.contentBox}>
-                    <Text style={styles.sectionTitle}>Contest Participants</Text>
+                    <Text style={styles.sectionTitle}>
+                        {contest.type == "previous" ? "Contest Result" : "Contest Participants"}
+                    </Text>
                     <View style={styles.divider} />
                     {
                         (contest && participants) ?
                             participants.length ?
-                                participants.map(function (participant) {
-                                    return <ParticipantBox key={participant.id} participant={participant} />
+                                participants.map(function (participant, i) {
+                                    return <ParticipantBox key={participant.id} participant={participant} showResult={contest.type == "previous"} rank={i + 1} />
                                 }) :
                                 <NotFound title="No Participants" icon="users" />
                             : <></>
@@ -566,4 +736,60 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 15,
     },
+    imageUploadButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.1)',
+        borderRadius: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        marginVertical: 8,
+        alignSelf: 'center'
+    },
+    imageUploadButtonIcon: {
+        fontSize: 18,
+        color: 'rgba(0,0,0,0.6)',
+        marginRight: 10,
+    },
+    imageUploadButtonText: {
+        fontSize: 14,
+        color: 'rgba(0,0,0,0.6)',
+        fontWeight: '600',
+    },
+    mediaContainer: {
+        backgroundColor: 'rgba(0,0,0,0.1)',
+        margin: 6,
+        borderRadius: 8,
+        overflow: "hidden",
+        justifyContent: "center"
+    },
+    postImage: {
+        width: "100%",
+        height: 300,
+    },
+    postVideo: {
+        width: '100%',
+        height: 260,
+        backgroundColor: '#000',
+    },
+    successContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: "center",
+        backgroundColor: "#fff",
+        height: 300,
+    },
+    successTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 24,
+        color: 'rgba(0, 0, 0, 0.8)',
+        textAlign: 'center'
+    },
+    successSemiTitle: {
+        fontSize: 14,
+        marginTop: 8,
+        color: 'rgba(0, 0, 0, 0.6)',
+        textAlign: 'center'
+    }
 });

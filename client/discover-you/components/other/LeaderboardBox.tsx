@@ -6,21 +6,28 @@ import { useRouter } from "expo-router";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useState } from "react";
 
-function ParticipantBox({ participant, showResult, rank }: { participant: any, showResult?: boolean, rank?: number }) {
+function LeaderboardBox({ user, rank }: { user: any, rank?: number }) {
     const router = useRouter();
 
     return (
-        <View style={styles.participantBox}>
+        <TouchableOpacity style={styles.userBox}
+            onPress={() => {
+                router.push({
+                    pathname: '/(other)/profile',
+                    params: { personId: user.id }
+                })
+            }}
+        >
             <View style={styles.creatorContainer}>
                 {
-                    participant.profile_picture_url ?
+                    user.profile_picture_url ?
                         <Image
-                            source={{ uri: serverUrl + participant.profile_picture_url }}
+                            source={{ uri: serverUrl + user.profile_picture_url }}
                             style={styles.profilePicture}
                             contentFit="cover"
                         /> :
                         <View style={styles.pseudoProfilePicture}>
-                            <Text style={styles.pseudoProfilePictureText}>{participant.full_name[0]}</Text>
+                            <Text style={styles.pseudoProfilePictureText}>{user.full_name[0]}</Text>
                         </View>
                 }
 
@@ -28,34 +35,25 @@ function ParticipantBox({ participant, showResult, rank }: { participant: any, s
                 <View style={styles.creatorTitleContainer}>
                     <View>
                         <Text style={styles.creatorTitle}>
-                            {participant.full_name}
+                            {user.full_name}
                         </Text>
-                        <TouchableOpacity style={styles.viewProfileBox}
-                            onPress={() => {
-                                router.push({
-                                    pathname: '/(other)/profile',
-                                    params: { personId: participant.id }
-                                })
-                            }}
-                        >
-                            <Text style={styles.viewProfileText}>View Profile</Text>
-                            <FontAwesome6 name="chevron-right" style={styles.viewProfileIcon} solid />
-                        </TouchableOpacity>
+                        <View style={styles.pointBox}>
+                            <FontAwesome6 name="star" style={styles.pointBoxIcon} solid />
+                            <Text style={styles.pointBoxCount}>{user.points}</Text>
+                            <Text style={styles.pointBoxText}>POINTS</Text>
+                        </View>
                     </View>
                 </View>
             </View>
-            {
-                showResult &&
-                <View style={styles.resultContainer}>
-                    <Text style={rank == 1 ? styles.resultText1st : rank == 2 ? styles.resultText2nd : rank == 3 ? styles.resultText3rd : styles.resultText}>{rank+(rank == 1 ? "st" : rank == 2 ? "nd" : rank == 3 ? "rd" : "th")}</Text>
-                </View>
-            }
-        </View>
+            <View style={styles.resultContainer}>
+                <Text style={rank == 1 ? styles.resultText1st : rank == 2 ? styles.resultText2nd : rank == 3 ? styles.resultText3rd : styles.resultText}>{rank}</Text>
+            </View>
+        </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
-    participantBox: {
+    userBox: {
         margin: 4,
         flexDirection: "row",
         alignItems: "center",
@@ -87,7 +85,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 6
     },
-    participantTime: {
+    userTime: {
         color: 'rgba(0,0,0,0.6)',
         fontSize: 12,
         margin: 2
@@ -104,7 +102,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: 'rgba(0,0,0,0.6)'
     },
-    participantContent: {
+    userContent: {
         fontSize: 15,
         marginTop: 2
     },
@@ -130,7 +128,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "bold",
         color: "rgba(0,0,0,0.4)",
-        width: 38,
+        width: 26,
         textAlign: "center"
     },
     resultText1st: {
@@ -139,9 +137,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffbb00",
         borderRadius: 6,
         paddingHorizontal: 6,
-        paddingVertical: 2,
+        paddingVertical: 3,
         color: "#FFFFFF",
-        width: 38,
+        width: 26,
         textAlign: "center"
     },
     resultText2nd: {
@@ -150,9 +148,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#C0C0C0",
         borderRadius: 6,
         paddingHorizontal: 6,
-        paddingVertical: 2,
+        paddingVertical: 3,
         color: "#FFFFFF",
-        width: 38,
+        width: 26,
         textAlign: "center"
     },
     resultText3rd: {
@@ -161,11 +159,32 @@ const styles = StyleSheet.create({
         backgroundColor: "#CD7F32",
         borderRadius: 6,
         paddingHorizontal: 6,
-        paddingVertical: 2,
+        paddingVertical: 3,
         color: "#FFFFFF",
-        width: 38,
+        width: 26,
         textAlign: "center"
+    },
+    pointBox: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 3
+    },
+    pointBoxIcon: {
+        marginRight: 2,
+        color: "#FF6600",
+        fontSize: 12
+    },
+    pointBoxCount: {
+        marginHorizontal: 4,
+        fontSize: 14,
+        fontWeight: 900,
+        color: "#FF6600"
+    },
+    pointBoxText: {
+        fontSize: 13,
+        fontWeight: 500,
+        color: "#FF6600"
     }
 })
 
-export default ParticipantBox;
+export default LeaderboardBox;

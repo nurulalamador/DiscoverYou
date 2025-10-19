@@ -7,7 +7,7 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useState } from "react";
 import AudioPlayer from "../common/AudioPlayer";
 
-function PostBox({ post }: any) {
+function PostBoxAlt({ post }: any) {
     const router = useRouter();
 
     const [isReacted, setIsReacted] = useState<any>(post.is_reacted);
@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
         margin: 6,
         borderWidth: 1,
         borderColor: "rgba(0,0,0,0.1)",
-        padding: 8
+        padding: 8,
+        width: 320
     },
     profilePicture: {
         width: 40,
@@ -231,11 +232,11 @@ const styles = StyleSheet.create({
     },
     postImage: {
         width: "100%",
-        height: 300,
+        height: 200,
     },
     postVideo: {
         width: '100%',
-        height: 260,
+        height: 200,
         backgroundColor: '#000',
     },
     bottomContainer: {
@@ -294,16 +295,17 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 8,
         flexDirection: 'row',
-        alignSelf: 'flex-start',
         alignItems: 'center',
         gap: 8,
         overflow: 'hidden',
-        maxWidth: '100%'
+        maxWidth: '50%'
     },
     categoryText: {
         color: "#FF6600",
         fontWeight: "bold",
-        fontSize: 12
+        fontSize: 12,
+        overflow: 'hidden',
+        flexShrink: 1
     },
     categoryIcon: {
         fontSize: 14,
@@ -319,7 +321,9 @@ const styles = StyleSheet.create({
     },
     details: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginRight: 12,
+        flex: 1
     },
     detailsDivider: {
         fontSize: 4,
@@ -377,4 +381,4 @@ const styles = StyleSheet.create({
     // }
 })
 
-export default PostBox;
+export default PostBoxAlt;

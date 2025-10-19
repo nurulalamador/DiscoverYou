@@ -2,12 +2,11 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from "react-native";
 import { getCategoryIcon, serverUrl, categories, formatDuration } from "../constants";
 import { Image } from "expo-image";
-import * as ImagePicker from "expo-image-picker";
-import { MediaType } from "expo-image-picker";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import useAuth from "@/app/authContext";
-import { useVideoPlayer, VideoPlayer, VideoView } from "expo-video";
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from "expo-image-picker";
+
 
 function DoPostBox() {
     const { user, setUpdateShowcase } = useAuth();
@@ -52,6 +51,28 @@ function DoPostBox() {
                     type: "video",
                     uri: result.assets[0].uri,
                     duration: result.assets[0].duration ? Math.round(result.assets[0].duration / 1000) : 0
+                }]
+            }));
+        }
+    }
+
+    async function pickAudio() {
+        let result = await DocumentPicker.getDocumentAsync({
+            type: 'audio/*',
+            copyToCacheDirectory: true
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+
+            setFormData(prev => ({
+                ...prev,
+                media: [...prev.media, {
+                    type: "audio",
+                    uri: result.assets[0].uri,
+                    duration: null,
+                    // name: result.assets[0].name,
+                    // mimeType: result.assets[0].mimeType,
+                    // size: result.assets[0].size
                 }]
             }));
         }
@@ -166,12 +187,18 @@ function DoPostBox() {
                                         style={styles.mediaImage}
                                         contentFit="cover"
                                     />
-                                ) : (
+                                ) : file.type === "video" ? (
                                     <>
                                         <FontAwesome6 name="video" style={styles.mediaVideoIcon} solid />
                                         <Text style={styles.mediaVideoText}>{formatDuration(file.duration)}</Text>
                                     </>
-                                )}
+                                ) : file.type === "audio" ? (
+                                    <>
+                                        <FontAwesome6 name="microphone" style={styles.mediaVideoIcon} solid />
+                                        <Text style={styles.mediaVideoText}>Audio</Text>
+                                    </>
+                                ) : <></>
+                            }
                             </View>
                         )
                     })}
@@ -212,17 +239,17 @@ function DoPostBox() {
                     <TouchableOpacity onPress={pickVideo}>
                         <FontAwesome6 name="video" style={styles.iconButton} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={pickAudio}>
                         <FontAwesome6 name="microphone" style={styles.iconButton} />
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity style={isReady ? styles.postButton : [styles.postButton, {opacity: 0.6}]} onPress={handleSubmit} disabled={!isReady}>
+            <TouchableOpacity style={isReady ? styles.postButton : [styles.postButton, { opacity: 0.6 }]} onPress={handleSubmit} disabled={!isReady}>
                 {
                     isReady ?
-                    <Text style={styles.postButtonText}>Post</Text>
-                    :
-                    <Text style={styles.postButtonText}>Posting...</Text>
+                        <Text style={styles.postButtonText}>Post</Text>
+                        :
+                        <Text style={styles.postButtonText}>Posting...</Text>
                 }
             </TouchableOpacity>
         </View>

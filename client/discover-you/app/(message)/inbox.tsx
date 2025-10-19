@@ -1,11 +1,13 @@
 import Loading from "@/components/common/Loading";
-import { serverUrl } from "@/components/constants";
+import { formatDuration, serverUrl } from "@/components/constants";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import useAuth from "../authContext";
+import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from 'expo-document-picker';
 
 export default function Inbox() {
     const [content, setContent] = useState<string>("");
@@ -15,11 +17,76 @@ export default function Inbox() {
     const [loading, setLoading] = useState<boolean>(true);
     const [updateFlag, setUpdateFlag] = useState(0);
 
-    const {setUpdateMessage, updateMessage} = useAuth();
+    const [formData, setFormData] = useState({
+        content: "",
+        category: "Web Development",
+        media: [] as {
+            type: "image" | "video" | "audio";
+            uri: string;
+            duration: any;
+        }[]
+    });
+
+    const { setUpdateMessage, updateMessage } = useAuth();
 
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
     const scrollViewRef = useRef<ScrollView>(null);
+
+    async function pickImage() {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: false,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setFormData(prev => ({
+                ...prev,
+                media: [...prev.media, { type: "image", uri: result.assets[0].uri, duration: null }]
+            }));
+        }
+    }
+
+    // Pick video
+    async function pickVideo() {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['videos'],
+        });
+
+        if (!result.canceled) {
+            setFormData(prev => ({
+                ...prev,
+                media: [...prev.media, {
+                    type: "video",
+                    uri: result.assets[0].uri,
+                    duration: result.assets[0].duration ? Math.round(result.assets[0].duration / 1000) : 0
+                }]
+            }));
+        }
+    }
+
+    async function pickAudio() {
+        let result = await DocumentPicker.getDocumentAsync({
+            type: 'audio/*',
+            copyToCacheDirectory: true
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+
+            setFormData(prev => ({
+                ...prev,
+                media: [...prev.media, {
+                    type: "audio",
+                    uri: result.assets[0].uri,
+                    duration: null,
+                    // name: result.assets[0].name,
+                    // mimeType: result.assets[0].mimeType,
+                    // size: result.assets[0].size
+                }]
+            }));
+        }
+    }
 
     const router = useRouter();
 
@@ -35,7 +102,7 @@ export default function Inbox() {
                     setMessages(data.messages);
                     setPerson(data.person);
                     setLoading(false);
-                    setUpdateMessage((prev:any) => prev + 1);
+                    setUpdateMessage((prev: any) => prev + 1);
                     // if (scrollViewRef.current) {
                     //     scrollViewRef.current.scrollToEnd({ animated: true });
                     // }
@@ -177,27 +244,72 @@ export default function Inbox() {
                         : <></>
                 }
             </ScrollView>
-            <View style={isKeyboardVisible ? [styles.messageInputContainer, {marginBottom: 40}] : styles.messageInputContainer}>
-                <View style={styles.iconButtonContainer}>
-                    <TouchableOpacity onPress={() => { }}>
-                        <FontAwesome6 name="image" style={styles.iconButton} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { }}>
-                        <FontAwesome6 name="video" style={styles.iconButton} />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <FontAwesome6 name="microphone" style={styles.iconButton} />
+            <View style={isKeyboardVisible ? [styles.messageInputContainer, { marginBottom: 40 }] : styles.messageInputContainer}>
+                {
+                    formData.media.length > 0 &&
+                    <ScrollView
+                        style={styles.mediaContainer}
+                        horizontal
+                    >
+                        {formData.media.map((file, index) => {
+                            return (
+                                <View key={index} style={styles.mediaBox}>
+                                    <TouchableOpacity
+                                        style={styles.mediaDelete}
+                                        onPress={() => {
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                media: prev.media.filter((_, i) => i !== index)
+                                            }));
+                                        }}
+                                    >
+                                        <FontAwesome6 name="xmark" style={styles.mediaDeleteIcon} solid />
+                                    </TouchableOpacity>
+                                    {file.type === "image" ? (
+                                        <Image
+                                            source={{ uri: file.uri }}
+                                            style={styles.mediaImage}
+                                            contentFit="cover"
+                                        />
+                                    ) : file.type === "video" ? (
+                                        <>
+                                            <FontAwesome6 name="video" style={styles.mediaVideoIcon} solid />
+                                            <Text style={styles.mediaVideoText}>{formatDuration(file.duration)}</Text>
+                                        </>
+                                    ) : file.type === "audio" ? (
+                                        <>
+                                            <FontAwesome6 name="microphone" style={styles.mediaVideoIcon} solid />
+                                            <Text style={styles.mediaVideoText}>Audio</Text>
+                                        </>
+                                    ) : <></>
+                                    }
+                                </View>
+                            )
+                        })}
+                    </ScrollView>
+                }
+                <View style={styles.inputContainer}>
+                    <View style={styles.iconButtonContainer}>
+                        <TouchableOpacity onPress={pickImage}>
+                            <FontAwesome6 name="image" style={styles.iconButton} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={pickVideo}>
+                            <FontAwesome6 name="video" style={styles.iconButton} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={pickAudio}>
+                            <FontAwesome6 name="microphone" style={styles.iconButton} />
+                        </TouchableOpacity>
+                    </View>
+                    <TextInput
+                        value={content}
+                        onChangeText={setContent}
+                        style={styles.messageInput}
+                        placeholder="Type a message..."
+                    />
+                    <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+                        <Ionicons name="send" style={styles.sendButtonIcon} />
                     </TouchableOpacity>
                 </View>
-                <TextInput
-                    value={content}
-                    onChangeText={setContent}
-                    style={styles.messageInput}
-                    placeholder="Type a message..."
-                />
-                <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-                    <Ionicons name="send" style={styles.sendButtonIcon} />
-                </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     );
@@ -268,8 +380,6 @@ const styles = StyleSheet.create({
         marginTop: 1
     },
     messageInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
         backgroundColor: '#FFFFFF',
         padding: 8,
         borderTopColor: "rgba(0,0,0,0.1)",
@@ -391,5 +501,66 @@ const styles = StyleSheet.create({
     },
     gap: {
         height: 8
+    },
+        mediaContainer: {
+        paddingHorizontal: 2,
+        paddingBottom: 4,
+        marginBottom: 2,
+        marginTop: 8
+    },
+    mediaBox: {
+        width: 100,
+        height: 100,
+        marginHorizontal: 4,
+        borderWidth: 1,
+        borderColor: "rgba(0,0,0,0.2)",
+        borderRadius: 8,
+        overflow: "hidden",
+        backgroundColor: "rgba(0,0,0,0.1)",
+        position: "relative",
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    mediaDelete: {
+        position: "absolute",
+        right: 6,
+        top: 6,
+        zIndex: 99,
+        height: 20,
+        width: 20,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "rgba(0,0,0,0.4)",
+        backgroundColor: "rgba(255,255,255,0.8)",
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    mediaDeleteIcon: {
+        color: "rgba(0,0,0,0.8)",
+    },
+
+    mediaVideoText: {
+        position: "absolute",
+        left: 6,
+        bottom: 6,
+        fontSize: 12,
+        marginTop: 6,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        color: "rgba(255,255,255,0.8)",
+        borderRadius: 10
+    },
+    mediaVideoIcon: {
+        fontSize: 32,
+        color: "rgba(0,0,0,0.4)",
+    },
+    mediaImage: {
+        width: "100%",
+        height: "100%"
+    },
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center"
     }
 });

@@ -118,6 +118,7 @@ exports.login = async (req, res) => {
                             gender: user.gender,
                             date_of_birth: user.date_of_birth,
                             mobile_no: user.mobile_no,
+                            points: user.points,
                             interests: user.interests ? user.interests.split(',') : []
                         }
                     });
@@ -165,6 +166,8 @@ exports.signup = async (req, res) => {
                             });
                         }
                         else {
+                            console.log("err1")
+                            console.log(err);
                             return res.status(500).json({
                                 success: false,
                                 message: "Failed to register user.",
@@ -185,6 +188,8 @@ exports.signup = async (req, res) => {
             );
         });
     } catch (error) {
+                            console.log("err2")
+                            console.log(error);
         res.status(500).json({
             status: "Error",
             message: "Failed to register user.",
