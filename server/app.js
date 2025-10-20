@@ -40,7 +40,7 @@ const io = new Server(server, {
 setIO(io);
 
 io.on("connection", (socket) => {
-    console.log("New user connected:", socket.id);
+    //console.log("New user connected:", socket.id);
     socket.emit("register_again", { message: "Please register again." });
 
     socket.on("register", (userId) => {

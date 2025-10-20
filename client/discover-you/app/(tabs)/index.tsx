@@ -15,7 +15,7 @@ import PostBox from "@/components/showcase/PostBox";
 import PostBoxAlt from "@/components/showcase/PostBoxAlt";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, updateMessage, updateCourse } = useAuth();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,7 @@ export default function Home() {
         });
     }
     loadData();
-  }, []);
+  }, [updateMessage, updateCourse]);
 
   if (loading) {
     return <Loading />

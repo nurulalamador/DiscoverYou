@@ -14,7 +14,7 @@ export default function NotFound(
 
 const styles = StyleSheet.create({
         notFound: {
-        height: 200,
+        minHeight: 200,
         alignItems: "center",
         justifyContent: "center"
     },
@@ -26,6 +26,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: 'rgba(0,0,0,0.6)',
-        marginTop: 18
+        marginTop: 24
     }
 })

@@ -522,4 +522,212 @@ exports.getHomeData = (req, res) => {
         });
 };
 
+exports.getNotifications = (req, res) => {
+    const userId = req.userId;
+    connection.query(
+        `SELECT * FROM notifications n
+            WHERE n.receiver_id = ? 
+            ORDER BY n.sent_at DESC`,
+        [userId],
+        function (err, results) {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Database error.",
+                    error: err
+                });
+            }
+            connection.query(
+                `UPDATE notifications SET is_seen = 1
+                WHERE receiver_id = ?`,
+                [userId],
+                function (err, resultsNew) {
+                    if (err) {
+                        return res.status(500).json({
+                            success: false,
+                            message: "Database error.",
+                            error: err
+                        });
+                    }
+                    res.status(200).json({
+                        success: true,
+                        notifications: results
+                    });
+                }
+            );
+        }
+    );
+};
 
+exports.getSearchData = (req, res) => {
+    const userId = req.userId;
+    const now = new Date();
+    const promises = {};
+    let { query, category } = req.body;
+
+    if (category == "All Category") {
+        category = "";
+    }
+    // Upcoming contests (start_time > now)
+    promises.contests = new Promise((resolve, reject) => {
+        const q = `
+            SELECT contests.*, 
+                TIMESTAMPDIFF(SECOND, ?, contests.start_time) AS starting_in,
+                users.full_name AS organizer_name,
+                CASE 
+                    WHEN users.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', users.id)
+                    ELSE NULL
+                END AS organizer_profile_picture_url
+            FROM contests
+            JOIN users ON users.id = contests.organizer_id
+            WHERE contests.name LIKE '%${query}%' AND contests.category LIKE '%${category}%'`;
+        connection.query(q, [now], (err, rows) => err ? reject(err) : resolve(rows));
+    });
+
+    // Upcoming webinars (start_time > now)
+    promises.webinars = new Promise((resolve, reject) => {
+        const q = `
+            SELECT webinars.*, 
+                TIMESTAMPDIFF(SECOND, ?, webinars.start_time) AS starting_in,
+                users.full_name AS organizer_name,
+                CASE 
+                    WHEN users.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', users.id)
+                    ELSE NULL
+                END AS organizer_profile_picture_url
+            FROM webinars
+            JOIN users ON users.id = webinars.organizer_id
+            WHERE webinars.name LIKE '%${query}%' AND webinars.category LIKE '%${category}%'`;
+        connection.query(q, [now], (err, rows) => err ? reject(err) : resolve(rows));
+    });
+
+    // Browsing courses (not enrolled) - limit 5
+    promises.courses = new Promise((resolve, reject) => {
+        const q = `SELECT c.id, c.name, c.description, c.category, c.instructor_id, u.full_name AS instructor_name,
+                    CASE 
+                        WHEN c.cover_image IS NOT NULL THEN CONCAT('/course/image/', c.id)
+                        ELSE NULL
+                    END AS cover_image_url,
+                    CASE 
+                        WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                        ELSE NULL
+                    END AS profile_picture_url
+            FROM courses AS c
+            JOIN users AS u
+            ON c.instructor_id = u.id
+            WHERE c.name LIKE '%${query}%' AND c.category LIKE '%${category}%';`;
+        connection.query(q, [userId], (err, rows) => err ? reject(err) : resolve(rows));
+    });
+
+    // Top hiring (by number of applicants) - limit 5
+    promises.hiring = new Promise((resolve, reject) => {
+        const q = `
+            SELECT 
+                h.id,
+                h.name,
+                h.company,
+                h.category,
+                h.description,
+                h.type,
+                h.work_location,
+                h.salary,
+                h.hirer_id,
+                h.last_date,
+                u.full_name AS hirer_name,
+                CASE 
+                    WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                    ELSE NULL
+                END AS hirer_profile_picture_url,
+                (SELECT COUNT(*) 
+                    FROM hiring_applicants ha 
+                    WHERE ha.hiring_id = h.id) AS total_applicants
+            FROM hiring AS h
+            JOIN users AS u ON h.hirer_id = u.id
+            WHERE h.name LIKE '%${query}%' AND h.category LIKE '%${category}%'
+            ORDER BY total_applicants DESC;`;
+        connection.query(q, (err, rows) => err ? reject(err) : resolve(rows));
+    });
+
+    // Top showcase posts by likes (reactions) - limit 5
+    promises.showcase = new Promise((resolve, reject) => {
+        const q = `
+            SELECT 
+                sp.id,
+                sp.content,
+                sp.category,
+                sp.creator_id,
+                sp.created_at,
+                u.full_name AS creator_name,
+                CASE 
+                    WHEN u.profile_picture IS NOT NULL THEN CONCAT('/profile/picture/', u.id)
+                    ELSE NULL
+                END AS creator_profile_picture_url,
+                GROUP_CONCAT(
+                    CASE 
+                        WHEN spm.id IS NOT NULL THEN CONCAT('/showcase/media/', spm.id)
+                        ELSE NULL
+                    END
+                ) AS media_urls,
+                GROUP_CONCAT(
+                    CASE
+                        WHEN spm.media_type IS NOT NULL THEN spm.media_type
+                        ELSE NULL
+                    END
+                ) AS media_types,
+                (SELECT COUNT(*) 
+                    FROM showcase_post_reactions spr 
+                    WHERE spr.post_id = sp.id) AS total_reactions,
+                (SELECT COUNT(*) 
+                    FROM showcase_post_comments spc 
+                    WHERE spc.post_id = sp.id) AS total_comments,
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 
+                        FROM showcase_post_reactions spr 
+                        WHERE spr.post_id = sp.id
+                        AND spr.reactor_id = ?
+                    )
+                    THEN TRUE
+                    ELSE FALSE
+                END AS is_reacted
+            FROM showcase_posts AS sp
+            JOIN users AS u ON sp.creator_id = u.id
+            LEFT JOIN showcase_post_media AS spm ON sp.id = spm.post_id
+            WHERE sp.content LIKE '%${query}%' AND sp.category LIKE '%${category}%'
+            GROUP BY sp.id
+            ORDER BY total_reactions DESC;`;
+        connection.query(q, [userId], (err, rows) => err ? reject(err) : resolve(rows));
+    });
+
+    Promise.all([
+        promises.contests,
+        promises.webinars,
+        promises.courses,
+        promises.hiring,
+        promises.showcase
+    ])
+        .then(([contests, webinars, courses, hiring, showcase]) => {
+            // transform media fields for showcase posts similar to getAllPosts logic
+            const posts = (showcase || []).map(post => {
+                let media = [];
+                if (post.media_urls) {
+                    const urls = post.media_urls.split(',');
+                    const types = post.media_types ? post.media_types.split(',') : [];
+                    media = urls.map((url, i) => ({ url, type: types[i] }));
+                }
+                return Object.assign({}, post, { media });
+            });
+
+            res.status(200).json({
+                success: true,
+                contests,
+                webinars,
+                courses,
+                hiring,
+                showcase: posts
+            });
+        })
+        .catch(err => {
+            console.error('getHomeData error:', err);
+            res.status(500).json({ success: false, message: 'Database error.', error: err });
+        });
+};

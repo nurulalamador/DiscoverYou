@@ -4,10 +4,12 @@ import NotFound from "../common/NotFound";
 import { serverUrl } from "../constants";
 import MessageBox from "./MessageBox";
 import useAuth from "@/app/authContext";
+import Loading from "../common/Loading";
 
 export default function Inbox() {
     const [messages, setMessages] = useState<any>([]);
     const {updateMessage} = useAuth();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         function loadMessages() {
@@ -18,6 +20,7 @@ export default function Inbox() {
                 .then(res => res.json())
                 .then(data => {
                     setMessages(data.messages);
+                    setLoading(false);
                 })
                 .catch(function (err) {
                     console.log("Messages data fetching failed:", err);
@@ -25,6 +28,10 @@ export default function Inbox() {
         }
         loadMessages();
     }, [updateMessage]);
+
+    if(loading) {
+        return <Loading/>
+    }
 
     return (
         <View style={styles.container}>

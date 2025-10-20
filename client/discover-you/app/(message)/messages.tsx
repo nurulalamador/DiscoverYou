@@ -9,6 +9,7 @@ import CourseBox from "@/components/course/CourseBox";
 import Header from "@/components/common/Header";
 import useAuth from "../authContext";
 import Inbox from "@/components/messaging/Inbox";
+import Community from "@/components/messaging/Community";
 
 
 export default function Messages() {
@@ -31,6 +32,7 @@ export default function Messages() {
             </View>
             <View style={styles.gap} />
             {activeSubTab == 'inbox' ? <Inbox /> : null}
+            {activeSubTab == 'communities' ? <Community /> : null}
             <View style={styles.gap} />
         </View>
     );

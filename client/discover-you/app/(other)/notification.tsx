@@ -18,22 +18,23 @@ export default function Notifications() {
     const router = useRouter();
 
     const [activeSubTab, setActiveSubTab] = useState<'inbox' | 'communities'>('inbox');
-    const [leaderboard, setLeaderboard] = useState<any>();
+    const [notifications, setNotifications] = useState<any>();
     const [loading, setLoading] = useState(true);
-    const { user } = useAuth();
+    const { user, setUpdateMessage } = useAuth();
 
     useEffect(() => {
         function loadData() {
-            fetch(`${serverUrl}/profile/leaderboard`, {
+            fetch(`${serverUrl}/profile/notification`, {
                 method: "GET",
                 credentials: "include"
             })
                 .then(res => res.json())
                 .then(data => {
-                    setLeaderboard(data.leaderboard);
+                    console.log(data);
+                    setUpdateMessage((prev:any) => prev + 1);
                 })
                 .catch(function (err) {
-                    console.log("Leaderboard data fetching failed:", err);
+                    console.log("notifications data fetching failed:", err);
                 })
                 .finally(function () {
                     setLoading(false);
@@ -49,9 +50,26 @@ export default function Notifications() {
     return (
         <View style={styles.container}>
             <Header title="Notifcation" />
-            <View style={{flex:1,  alignContent: "center", alignItems: "center", justifyContent: "center" }}>
-                <NotFound title="No Notifications!" icon="bell" />
-            </View>
+            {notifications && notifications.length ?
+                <View style={styles.contentBox}>
+                    {notifications.map((notification: any, index: number) => (
+                        <View key={notification.id}>
+                            {index !== 0 ? <View style={styles.divider} /> : null}
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 8 , paddingHorizontal: 4}}>
+                                <FontAwesome6 name="bell" style={{ height: 46, width: 46, borderRadius: 23, backgroundColor: "#FF6600", color: "#FFFFFF", textAlign: "center", textAlignVertical: "center", fontSize: 26 }} solid />
+                                <View style={{ flex: 1, flexDirection: "column", gap: 2 }}>
+                                    <Text style={{ fontSize: 16, fontWeight: "bold", color: "rgba(0,0,0,0.8)" }}>{notification.title}</Text>
+
+                                    <Text style={{ fontSize: 14, fontWeight: 500, color: "rgba(0,0,0,0.6)" }}>{notification.description}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    ))}
+                </View> :
+                <View style={{ flex: 1, alignContent: "center", alignItems: "center", justifyContent: "center" }}>
+                    <NotFound title="No Notifications!" icon="bell" />
+                </View>
+            }
         </View>
     );
 }
@@ -68,7 +86,7 @@ const styles = StyleSheet.create({
         height: 8
     },
     contentBox: {
-        margin: 6,
+        margin: 14,
         backgroundColor: "#FFFFFF",
         borderWidth: 1,
         borderColor: "rgba(0, 0, 0, 0.1)",

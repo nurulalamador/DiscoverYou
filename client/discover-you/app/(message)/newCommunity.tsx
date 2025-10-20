@@ -26,16 +26,16 @@ export default function ChangePassword() {
 
     return (
         <View style={styles.container}>
-            <Header title="Change Password" />
+            <Header title="New Community" />
             <ScrollView>
                 <View style={styles.gap}></View>
                 <View style={styles.formContainer}>
-                    <Text style={styles.title}>Change Your Password</Text>
+                    <Text style={styles.title}>Create New Communitiy</Text>
                     <View style={styles.label}>
-                        <Text style={styles.labelTitle}>Current Password</Text>
+                        <Text style={styles.labelTitle}>Community Name</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Enter your current password"
+                            placeholder="Enter community name"
                             placeholderTextColor="#888"
                             keyboardType="default"
                             autoCapitalize="none"
@@ -44,32 +44,32 @@ export default function ChangePassword() {
                         />
                     </View>
                     <View style={styles.label}>
-                        <Text style={styles.labelTitle}>New Password</Text>
+                        <Text style={styles.labelTitle}>Community Category</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Create a new password"
+                            placeholder="Enter community category"
                             placeholderTextColor="#888"
                             keyboardType="default"
                             autoCapitalize="none"
-                            nativeID="newPassword"
-                            onChangeText={(value) => handleInputChange("newPassword", value)}
+                            nativeID="currentPassword"
+                            onChangeText={(value) => handleInputChange("currentPassword", value)}
                         />
                     </View>
                     <View style={styles.label}>
-                        <Text style={styles.labelTitle}>Confirm New Password</Text>
+                        <Text style={styles.labelTitle}>Community Description</Text>
                         <TextInput
-                            style={ styles.input }
-                            placeholder="Confirm your new password"
+                            style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+                            placeholder="Enter community description"
                             placeholderTextColor="#888"
                             keyboardType="default"
                             autoCapitalize="none"
-                            nativeID="confirmNewPassword"
-                            onChangeText={(value) => handleInputChange("confirmNewPassword", value)}
+                            nativeID="currentPassword"
+                            onChangeText={(value) => handleInputChange("currentPassword", value)}
                         />
                     </View>
                 </View>
                 <TouchableOpacity style={styles.loginButton}>
-                    <Text style={styles.loginButtonText}>Change Password</Text>
+                    <Text style={styles.loginButtonText}>Create Community</Text>
                 </TouchableOpacity>
                 <View style={styles.gap}></View>
             </ScrollView>

@@ -10,6 +10,7 @@ const hiringRoutes = require("./hiring.route");
 const contestRoutes = require("./contest.route");
 const webinarRoutes = require("./webinar.route");
 const adminRoutes = require("./admin.route");
+const communityRoutes = require("./community.route");
 
 router.use("/auth", authRoutes);
 router.use("/course", courseRoutes);
@@ -19,6 +20,6 @@ router.use("/contest", contestRoutes);
 router.use("/webinar", webinarRoutes);
 router.use("/messaging", messagingRoutes);
 router.use("/hiring", hiringRoutes);
-router.use("/admin", adminRoutes);
+router.use("/community", communityRoutes);
 
 module.exports = router;
