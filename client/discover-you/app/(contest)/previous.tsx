@@ -42,7 +42,7 @@ export default function PreviousContests() {
             <Header title="Browse Contests" />
 
             <View style={styles.gap} />
-            <FilterBox sort={["Newest First", "Lowest Price"]} />
+            <FilterBox sort={["Newest First", "Alphabetical"]} />
             <ScrollView style={styles.contentContainer}>
                 {
                     contests ?

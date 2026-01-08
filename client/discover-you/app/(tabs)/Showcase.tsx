@@ -11,7 +11,6 @@ export default function Showcase() {
     <ScrollView>
       <View style={styles.gap}></View>
       <DoPostBox/>
-      <FilterBox sort={["Newest First", "Most Liked"]}/>
       <ForYouPosts/>
       <View style={styles.gap}></View>
     </ScrollView>

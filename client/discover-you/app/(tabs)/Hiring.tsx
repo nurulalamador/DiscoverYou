@@ -1,5 +1,6 @@
 import FilterBox from "@/components/common/FilterBox";
 import Loading from "@/components/common/Loading";
+import NotFound from "@/components/common/NotFound";
 import { serverUrl } from "@/components/constants";
 import JobBox from "@/components/hiring/JobBox";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -62,14 +63,15 @@ export default function Hiring() {
       }
 
       <View style={styles.gap} />
-      <FilterBox sort={["Newest First", "Highest Salary"]} />
+      <FilterBox sort={["Alphabetical", "Highest Salary"]} setData={setHirings} originalData={hirings} from="hiring" />
       <View style={styles.jobBoxContainer}>
-        {hirings &&
+        {hirings.length ?
           hirings.map(function (job) {
             return (
               <JobBox key={job.id} job={job} />
             )
           })
+          : <NotFound title="No Job Found" icon="briefcase" />
         }
       </View>
       <View style={styles.gap} />

@@ -64,11 +64,11 @@ export default function Others() {
         </View>
       </View>
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem}>
+        {/* <TouchableOpacity style={styles.menuItem}>
           <FontAwesome6 name="file" style={styles.menuItemIcon} />
           <Text style={styles.menuItemText}>My Resume</Text>
         </TouchableOpacity>
-        <View style={styles.divider}></View>
+        <View style={styles.divider}></View> */}
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() => router.push("/(setting)/settings")}

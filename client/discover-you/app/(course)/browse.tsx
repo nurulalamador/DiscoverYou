@@ -19,6 +19,7 @@ type Course = {
 
 export default function Browse() {
     const [courses, setCourses] = useState<Course[]>([]);
+    const [originalCourses, setOriginalCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -30,6 +31,7 @@ export default function Browse() {
                 .then(res => res.json())
                 .then(data => {
                     setCourses(data.exploreCourses);
+                    setOriginalCourses(data.exploreCourses || []);
                 })
                 .catch(function (err) {
                     console.log("Course data fetching failed:", err);
@@ -50,7 +52,7 @@ export default function Browse() {
             <Header title="Browse Courses" />
 
             <View style={styles.gap} />
-            <FilterBox sort={["Newest First", "Lowest Price"]} />
+            <FilterBox sort={["Newest First", "Lowest Price"]} setData={setCourses} from="course" originalData={originalCourses} />
             <ScrollView style={styles.contentContainer}>
                 {
                     courses ?

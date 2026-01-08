@@ -42,7 +42,7 @@ export default function PreviousWebinars() {
             <Header title="Browse Webinars" />
 
             <View style={styles.gap} />
-            <FilterBox sort={["Newest First", "Lowest Price"]} />
+            <FilterBox sort={["Newest First", "Alphabetical"]} />
             <ScrollView style={styles.contentContainer}>
                 {
                     webinars ?

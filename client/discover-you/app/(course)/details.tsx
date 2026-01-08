@@ -151,12 +151,6 @@ export default function Details() {
                                     <Text style={styles.detailTitle}>{course.total_materials}</Text>
                                     <Text style={styles.detailSemiTitle}>Materials</Text>
                                 </View>
-                                <View style={styles.detailDivider} />
-                                <View style={styles.detail}>
-                                    {/* <FontAwesome6 name="star" style={styles.detailIcon} solid /> */}
-                                    <Text style={styles.detailTitle}>5.0</Text>
-                                    <Text style={styles.detailSemiTitle}>Ratings</Text>
-                                </View>
                             </View>
                         </View>
                         : <></>

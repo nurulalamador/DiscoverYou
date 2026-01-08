@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 import PostBox from "./PostBox";
 import useAuth from "@/app/authContext";
 import Loading from "../common/Loading";
+import FilterBox from "../common/FilterBox";
+import NotFound from "../common/NotFound";
 
 export default function ForYouPosts() {
     const [posts, setPosts] = useState<any[]>([]);
-    const {updateShowcase} = useAuth();
+    const [originalPosts, setOriginalPosts] = useState<any[]>([]);
+    const { updateShowcase } = useAuth();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -19,6 +22,7 @@ export default function ForYouPosts() {
                 .then(res => res.json())
                 .then(data => {
                     setPosts(data.posts);
+                    setOriginalPosts(data.posts || []);
                 })
                 .catch(function (err) {
                     console.log("Posts data fetching failed:", err);
@@ -30,20 +34,25 @@ export default function ForYouPosts() {
         loadData();
     }, [updateShowcase]);
 
-    if(loading) {
-        return <Loading/>
+    if (loading) {
+        return <Loading />
     }
-    
+
     return (
-        <View style={styles.postContainer}>
-            {
-                posts.map(function(post){
-                    return (
-                        <PostBox key={post.id} post={post}/>
-                    )
-                })
-            }
-        </View>
+        <>
+            <FilterBox sort={["Newest First", "Most Liked"]} setData={setPosts} from="showcase" originalData={originalPosts} />
+            <View style={styles.postContainer}>
+                {
+                    posts.length ?
+                    posts.map(function (post) {
+                        return (
+                            <PostBox key={post.id} post={post} />
+                        )
+                    })
+                    : <NotFound title="No Post Found" icon="photo-film"/>
+                }
+            </View>
+        </>
     )
 }
 
