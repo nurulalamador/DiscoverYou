@@ -2,28 +2,16 @@ import { Tabs, useRouter } from "expo-router";
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, ToastAndroid, Alert, LogBox } from "react-native";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { use, useEffect, useState } from "react";
-import * as Notifications from 'expo-notifications';
 import { categories, getCategoryIcon, serverUrl } from "@/components/constants";
 import useAuth from "../authContext";
 import { io } from "socket.io-client";
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
-
-LogBox.ignoreLogs(['expo-notifications: Android Push notifications']);
 
 export default function TabsLayout() {
   const { user, setUser, updateMessage, setUpdateMessage } = useAuth();
   const router = useRouter();
 
   const [unseenMessages, setUnseenMessages] = useState(0);
-  const [unseenNotifications, setUnseenNotifications] = useState(0);
+
 
 
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -84,27 +72,9 @@ export default function TabsLayout() {
       setShowCategoryModal(true);
     }
 
-    requestPermissions();
-
-    // requestNotificationPermission();
   }, []);
 
-  async function requestPermissions() {
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please enable notifications');
-    }
-  }
 
-  async function sendNotification(title: string, body: string) {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: title,
-        body: body,
-      },
-      trigger: null,
-    });
-  }
 
   useEffect(() => {
     function loadData() {
@@ -115,7 +85,6 @@ export default function TabsLayout() {
         .then(res => res.json())
         .then(data => {
           setUnseenMessages(data.total_unseen_messages || 0);
-          setUnseenNotifications(data.total_unseen_notifications || 0);
         })
         .catch(function (err) {
           console.log("Initial data fetching failed:", err);
@@ -130,7 +99,6 @@ export default function TabsLayout() {
 
     // Listen for incoming messages
     socket.on("receive_message", (data) => {
-      sendNotification(data.senderName, data.content);
       setUpdateMessage((prev: any) => prev + 1);
     });
 
@@ -209,20 +177,6 @@ export default function TabsLayout() {
                   }}
                 >
                   <FontAwesome6 name="magnifying-glass" size={20} color="rgba(0,0,0,0.6)" solid />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={() => router.push("/(message)/messages")}>
-                  {
-                    unseenMessages > 0 ? <Text style={styles.unseenBox}>{unseenMessages}</Text> : <></>
-                  }
-                  <FontAwesome6 name="comment" size={20} color="rgba(0,0,0,0.6)" solid />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={() => {
-                  router.push("/(other)/notification");
-                }}>
-                  {
-                    unseenNotifications > 0 ? <Text style={styles.unseenBox}>{unseenNotifications}</Text> : <></>
-                  }
-                  <FontAwesome6 name="bell" size={20} color="rgba(0,0,0,0.6)" solid />
                 </TouchableOpacity>
               </View>
             </View>
@@ -307,6 +261,30 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="TrackRecords"
+          options={{
+            title: "My Records",
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={{ alignItems: "center" }}>
+                {focused && <View style={styles.activeIndicator} />}
+                <FontAwesome6 name="chart-line" size={size} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="LearnFromOthers"
+          options={{
+            title: "Learn",
+            tabBarIcon: ({ color, size, focused }) => (
+              <View style={{ alignItems: "center" }}>
+                {focused && <View style={styles.activeIndicator} />}
+                <FontAwesome6 name="graduation-cap" size={size} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="Others"
           options={{
             title: "Others",
@@ -327,6 +305,10 @@ const getTitle = (name: string) => {
   switch (name) {
     case "index":
       return "Home";
+    case "TrackRecords":
+      return "Track Records";
+    case "LearnFromOthers":
+      return "Learn from Others";
     default:
       return name;
   }

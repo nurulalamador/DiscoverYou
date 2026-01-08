@@ -88,7 +88,7 @@ export default function Welcome() {
         <View style={styles.container}>
             <View style={styles.welcomeContainer}>
                 <Text style={styles.welcomeContainerSemiTitle}>Welcome to</Text>
-                <Text style={styles.welcomeContainerTitle}>DiscoverYou</Text>
+                <Text style={styles.welcomeContainerTitle}>EmBridge</Text>
                 <Text style={styles.welcomeContainerDescription}>Find your potential!</Text>
             </View>
 
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     welcomeContainerTitle: {
         fontSize: 36,
         fontWeight: "bold",
-        color: '#FF6600'
+        color: '#EE0000'
     },
     welcomeContainerSemiTitle: {
         color: 'rgba(0, 0, 0, 0.8)',
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         padding: 14,
     },
     createAccountButton: {
-        backgroundColor: '#FF6600',
+        backgroundColor: '#EE0000',
         padding: 14,
         borderRadius: 8,
         alignItems: 'center',
@@ -238,6 +238,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 4,
     },
     activeIndicator: {
-        backgroundColor: '#FF6600',
+        backgroundColor: '#EE0000',
     },
 });

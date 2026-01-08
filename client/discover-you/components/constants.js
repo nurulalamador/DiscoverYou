@@ -1,5 +1,5 @@
 // const serverUrl = 'http://192.168.10.100:8000';
-const serverUrl = 'http://10.15.48.26:8000';
+const serverUrl = 'http://10.15.57.105:8000';
 
 const categories = [
     "Music and Singing",

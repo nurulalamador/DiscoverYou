@@ -69,13 +69,7 @@ export default function Others() {
           <Text style={styles.menuItemText}>My Resume</Text>
         </TouchableOpacity>
         <View style={styles.divider}></View> */}
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => router.push("/(setting)/settings")}
-        >
-          <FontAwesome6 name="gear" style={styles.menuItemIcon} />
-          <Text style={styles.menuItemText}>Settings</Text>
-        </TouchableOpacity>
+
         <View style={styles.divider}></View>
         <TouchableOpacity
           style={styles.menuItem}

@@ -71,11 +71,7 @@ export default function Login() {
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
       <View style={styles.headerContainer}>
-        <Image
-          source={require("../../assets/images/logoOrange.svg")}
-          style={styles.logo}
-          contentFit="contain"
-        />
+        <Text style={styles.logo}>EmBridge</Text>
       </View>
       <View style={styles.welcomeTextContainer}>
         <Text style={styles.title}>Welcome Back!</Text>
@@ -173,8 +169,13 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 260,
-    height: 100,
-    marginTop: 24
+    marginTop: 48,
+    alignContent: 'center',
+    alignItems: 'center',
+    fontSize: 38,
+    fontWeight: 'bold',
+    color: '#EE0000',
+    textAlign: 'center',
   },
   welcomeTextContainer: {
     padding: 8,
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     margin: 4,
-    color: '#FF6600'
+    color: '#EE0000'
   },
   subtitle: {
     fontSize: 16,
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   loginButton: {
-    backgroundColor: '#FF6600',
+    backgroundColor: '#EE0000',
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
-    backgroundColor: false ? "#FF6600" : "#fff",
+    backgroundColor: false ? "#EE0000" : "#fff",
   },
   checkboxActive: {
     height: 20,
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
-    backgroundColor: "#FF6600"
+    backgroundColor: "#EE0000"
   },
   checkboxTick: {
     color: "#FFFFFF",
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 0, 0, 0.6)'
   },
   forgetPassword: {
-    color: "#FF6600",
+    color: "#EE0000",
     fontWeight: "bold",
     fontSize: 14
   },
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   linkPressable: {
-    color: '#FF6600',
+    color: '#EE0000',
     fontWeight: 'bold',
     marginHorizontal: 6,
     fontSize: 15

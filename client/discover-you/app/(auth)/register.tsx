@@ -108,11 +108,7 @@ export default function Register() {
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.successContainer}>
         <View style={styles.headerContainer}>
-          <Image
-            source={require("../../assets/images/logoOrange.svg")}
-            style={styles.logo}
-            contentFit="contain"
-          />
+          <Text style={styles.logo}>EmBridge</Text>
         </View>
         <View style={styles.welcomeTextContainer}>
           <FontAwesome6 name="circle-check" size={180} color="#4BB543" solid />
@@ -134,11 +130,7 @@ export default function Register() {
         contentContainerStyle={styles.container}
       >
         <View style={styles.headerContainer}>
-          <Image
-            source={require("../../assets/images/logoOrange.svg")}
-            style={styles.logo}
-            contentFit="contain"
-          />
+          <Text style={styles.logo}>EmBridge</Text>
         </View>
         <View style={styles.welcomeTextContainer}>
           <Text style={styles.title}>Create New Account</Text>
@@ -196,7 +188,7 @@ export default function Register() {
                 style={formData.gender == "male" ? styles.genderActive : styles.gender}
                 onPress={() => handleInputChange("gender", "male")}
               >
-                <FontAwesome6 name="person" size={28} color={formData.gender == "male" ? "#FF6600" : "rgba(0,0,0,0.6)"} solid />
+                <FontAwesome6 name="person" size={28} color={formData.gender == "male" ? "#EE0000" : "rgba(0,0,0,0.6)"} solid />
                 <Text style={formData.gender == "male" ? styles.genderTextActive : styles.genderText}>
                   Male
                 </Text>
@@ -205,7 +197,7 @@ export default function Register() {
                 style={formData.gender == "female" ? styles.genderActive : styles.gender}
                 onPress={() => handleInputChange("gender", "female")}
               >
-                <FontAwesome6 name="person-dress" size={28} color={formData.gender == "female" ? "#FF6600" : "rgba(0,0,0,0.6)"} solid />
+                <FontAwesome6 name="person-dress" size={28} color={formData.gender == "female" ? "#EE0000" : "rgba(0,0,0,0.6)"} solid />
                 <Text style={formData.gender == "female" ? styles.genderTextActive : styles.genderText}>
                   Female
                 </Text>
@@ -332,8 +324,13 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 260,
-    height: 100,
-    marginTop: 24
+    marginTop: 48,
+    alignContent: 'center',
+    alignItems: 'center',
+    fontSize: 38,
+    fontWeight: 'bold',
+    color: '#EE0000',
+    textAlign: 'center',
   },
   welcomeTextContainer: {
     padding: 8,
@@ -350,7 +347,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     margin: 4,
-    color: '#FF6600'
+    color: '#EE0000'
   },
   subtitle: {
     fontSize: 16,
@@ -400,12 +397,12 @@ const styles = StyleSheet.create({
   },
   genderActive: {
     flex: 1,
-    backgroundColor: '#FF66000d',
+    backgroundColor: '#EE00000d',
     borderRadius: 8,
     padding: 12,
     paddingTop: 18,
     marginVertical: 8,
-    borderColor: '#FF6600',
+    borderColor: '#EE0000',
     borderWidth: 1,
     alignItems: 'center',
   },
@@ -416,7 +413,7 @@ const styles = StyleSheet.create({
   },
   genderTextActive: {
     marginTop: 8,
-    color: '#FF6600',
+    color: '#EE0000',
     fontSize: 14,
     fontWeight: "bold"
   },
@@ -427,7 +424,7 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   loginButton: {
-    backgroundColor: '#FF6600',
+    backgroundColor: '#EE0000',
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',
@@ -470,7 +467,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
-    backgroundColor: false ? "#FF6600" : "#fff",
+    backgroundColor: false ? "#EE0000" : "#fff",
   },
   checkboxActive: {
     height: 20,
@@ -481,7 +478,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
-    backgroundColor: "#FF6600"
+    backgroundColor: "#EE0000"
   },
   checkboxTick: {
     color: "#FFFFFF",
@@ -497,13 +494,13 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 0, 0, 0.6)'
   },
   termAndCondtion: {
-    color: "#FF6600",
+    color: "#EE0000",
     fontWeight: "bold",
     fontSize: 14,
     marginHorizontal: 4
   },
   forgetPassword: {
-    color: "#FF6600",
+    color: "#EE0000",
     fontWeight: "bold",
     fontSize: 14
   },
@@ -520,7 +517,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   linkPressable: {
-    color: '#FF6600',
+    color: '#EE0000',
     fontWeight: 'bold',
     marginHorizontal: 6,
     fontSize: 15
